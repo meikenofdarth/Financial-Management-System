@@ -46,16 +46,15 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.15.0</version>
+                <version>1.16.1</version>  <!-- UPDATED VERSION -->
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>1.2.0</version>
+                        <version>1.2.1</version> <!-- Updated Plugin -->
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <!-- Only mutate the core logic -->
                     <targetClasses>
                         <param>com.fincore.model.*</param>
                         <param>com.fincore.service.*</param>
@@ -75,14 +74,12 @@
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
 
-                    <!-- AGGRESSIVELY IGNORE VOID CALLS (Printing, Logging) -->
                     <avoidCallsTo>
                         <avoidCallsTo>java.util.logging</avoidCallsTo>
                         <avoidCallsTo>org.apache.log4j</avoidCallsTo>
                         <avoidCallsTo>org.slf4j</avoidCallsTo>
                         <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
-                        <avoidCallsTo>java.io.PrintStream</avoidCallsTo> <!-- System.out -->
-                        <avoidCallsTo>java.lang.System</avoidCallsTo>
+                        <avoidCallsTo>java.io.PrintStream</avoidCallsTo>
                     </avoidCallsTo>
                     
                     <mutationThreshold>70</mutationThreshold>
