@@ -1,0 +1,17 @@
+# Maven
+target/
+*.log
+
+# IDEA / Eclipse
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PITest reports
+pit-reports/

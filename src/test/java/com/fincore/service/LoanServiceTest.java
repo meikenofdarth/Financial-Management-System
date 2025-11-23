@@ -72,4 +72,20 @@ class LoanServiceTest {
             loanService.applyForLoan("L5", "C5", 6000, 12)
         );
     }
+    
+    @Test
+    void testApplyForLoan_ExactBoundary_MaxIncome() {
+        // Income = 20,000. Max Loan (x5) = 100,000.
+        accountService.registerCustomer("C99", "Edge", "Case", "edge@test.com", "Pass@123", 800, 20000);
+        
+        // 1. Try exactly 100,000 (Should Pass)
+        // This kills the mutant that changes "amount > max" to "amount >= max"
+        Loan loan = loanService.applyForLoan("L99", "C99", 100000, 12);
+        assertNotNull(loan);
+        
+        // 2. Try 100,001 (Should Fail)
+        assertThrows(IllegalStateException.class, () -> 
+            loanService.applyForLoan("L100", "C99", 100000.01, 12)
+        );
+    }
 }

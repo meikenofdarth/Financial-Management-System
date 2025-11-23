@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.fincore.util.FinancialMathTest" time="0.028" tests="9" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.fincore.util.FinancialMathTest" time="0.029" tests="9" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="22"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -13,7 +13,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk-22.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/surefire/surefirebooter-20251123144911853_3.jar /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/surefire 2025-11-23T14-49-11_820-jvmRun1 surefire-20251123144911853_1tmp surefire_0-20251123144911853_2tmp"/>
+    <property name="sun.java.command" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/surefire/surefirebooter-20251123150019073_3.jar /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/surefire 2025-11-23T15-00-19_044-jvmRun1 surefire-20251123150019073_1tmp surefire_0-20251123150019073_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/test-classes:/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/classes:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:"/>
@@ -30,7 +30,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/surefire/surefirebooter-20251123144911853_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial/target/surefire/surefirebooter-20251123150019073_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="22.0.1+8-16"/>
@@ -58,13 +58,13 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="66.0"/>
   </properties>
-  <testcase name="testCalculateCompoundInterest_ZeroYears" classname="com.fincore.util.FinancialMathTest" time="0.001"/>
-  <testcase name="testRound" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
+  <testcase name="testCalculateCompoundInterest_ZeroYears" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
+  <testcase name="testRound" classname="com.fincore.util.FinancialMathTest" time="0.001"/>
   <testcase name="testCalculateEMI_Standard" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
   <testcase name="testCalculateCompoundInterest_NegativeInput" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
-  <testcase name="testCalculateCompoundInterest_Parameterized(double, double, int, int, double)[1]" classname="com.fincore.util.FinancialMathTest" time="0.007"/>
+  <testcase name="testCalculateCompoundInterest_Parameterized(double, double, int, int, double)[1]" classname="com.fincore.util.FinancialMathTest" time="0.008"/>
   <testcase name="testCalculateCompoundInterest_Parameterized(double, double, int, int, double)[2]" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
   <testcase name="testCalculateCompoundInterest_StandardCase" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
-  <testcase name="testCalculateEMI_ZeroInterest" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
-  <testcase name="testCalculateEMI_EdgeCases" classname="com.fincore.util.FinancialMathTest" time="0.001"/>
+  <testcase name="testCalculateEMI_ZeroInterest" classname="com.fincore.util.FinancialMathTest" time="0.002"/>
+  <testcase name="testCalculateEMI_EdgeCases" classname="com.fincore.util.FinancialMathTest" time="0.0"/>
 </testsuite>

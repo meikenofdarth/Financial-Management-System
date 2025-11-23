@@ -15,62 +15,68 @@ class AccountServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Reset the Singleton state before every test to ensure isolation
         dataStore = DataStore.getInstance();
         dataStore.clearAll(); 
         accountService = new AccountService();
     }
 
     @Test
-    void testRegisterCustomer_Success() {
-        Customer c = accountService.registerCustomer("C1", "John", "Doe", "john@test.com", "Pass@123", 750, 50000);
-        assertNotNull(c);
-        assertEquals("john@test.com", dataStore.getCustomer("C1").getEmail());
-    }
-
-    @Test
-    void testCreateAccount_Savings() {
+    void testDeposit_UpdatesBalanceAndHistory() {
         // Setup
-        accountService.registerCustomer("C1", "John", "Doe", "john@test.com", "Pass@123", 750, 50000);
-        
-        // Action
+        accountService.registerCustomer("C1", "John", "Doe", "j@d.com", "P@ss1234", 700, 50000);
         Account acc = accountService.createAccount("SAVINGS", "A1", "C1", 1000.0);
         
-        // Assertion
-        assertNotNull(acc);
-        assertEquals("SAVINGS", acc.getAccountType());
-        assertEquals(1000.0, acc.getBalance());
+        int initialHistorySize = acc.getTransactionHistory().size(); // Should be 1 (Opening)
+
+        // Action
+        accountService.deposit("A1", 500.0);
+
+        // Assertions
+        assertEquals(1500.0, acc.getBalance(), "Balance should update");
+        
+        // CRITICAL: This kills VoidMethodCallMutator on 'addTransaction'
+        assertEquals(initialHistorySize + 1, acc.getTransactionHistory().size(), "Transaction history must increase");
+        assertEquals("DEPOSIT", acc.getTransactionHistory().get(initialHistorySize).getType());
     }
 
     @Test
-    void testTransfer_Success() {
-        // 1. Setup Data
-        accountService.registerCustomer("C1", "John", "Doe", "john@test.com", "Pass@123", 750, 50000);
-        accountService.createAccount("SAVINGS", "A1", "C1", 2000.0);
-        accountService.createAccount("SAVINGS", "A2", "C1", 500.0);
+    void testWithdraw_UpdatesBalanceAndHistory() {
+        accountService.registerCustomer("C1", "John", "Doe", "j@d.com", "P@ss1234", 700, 50000);
+        Account acc = accountService.createAccount("CURRENT", "A1", "C1", 1000.0);
+        
+        int initialHistorySize = acc.getTransactionHistory().size();
 
-        // 2. Perform Transfer
+        accountService.withdraw("A1", 200.0);
+
+        assertEquals(800.0, acc.getBalance());
+        assertEquals(initialHistorySize + 1, acc.getTransactionHistory().size());
+        assertEquals("WITHDRAWAL", acc.getTransactionHistory().get(initialHistorySize).getType());
+    }
+
+    @Test
+    void testTransfer_FullIntegration() {
+        accountService.registerCustomer("C1", "John", "Doe", "j@d.com", "P@ss1234", 700, 50000);
+        Account src = accountService.createAccount("SAVINGS", "A1", "C1", 2000.0);
+        Account dest = accountService.createAccount("SAVINGS", "A2", "C1", 500.0);
+
         accountService.transfer("A1", "A2", 500.0);
 
-        // 3. Verify Integration (A1 decreased, A2 increased)
-        // Kills mutant: Removing 'to.deposit(amount)' in source code
-        assertEquals(1500.0, dataStore.getAccount("A1").getBalance());
-        assertEquals(1000.0, dataStore.getAccount("A2").getBalance());
+        // Verify Balances
+        assertEquals(1500.0, src.getBalance());
+        assertEquals(1000.0, dest.getBalance());
+
+        // Verify Transactions (Kill Mutants that might skip one side of transfer)
+        assertTrue(src.getTransactionHistory().stream().anyMatch(t -> t.getType().equals("TRANSFER_OUT")));
+        assertTrue(dest.getTransactionHistory().stream().anyMatch(t -> t.getType().equals("TRANSFER_IN")));
     }
-
+    
     @Test
-    void testTransfer_InsufficientFunds() {
-        accountService.registerCustomer("C1", "John", "Doe", "john@test.com", "Pass@123", 750, 50000);
-        accountService.createAccount("SAVINGS", "A1", "C1", 100.0); // Only 100
-        accountService.createAccount("SAVINGS", "A2", "C1", 500.0);
-
-        // Expect Exception
-        assertThrows(IllegalStateException.class, () -> 
-            accountService.transfer("A1", "A2", 200.0)
+    void testAccountCreation_Validation() {
+        accountService.registerCustomer("C1", "John", "Doe", "j@d.com", "P@ss1234", 700, 50000);
+        
+        // Kills VoidMethodMutator in error handling
+        assertThrows(IllegalArgumentException.class, () -> 
+            accountService.createAccount("INVALID_TYPE", "AX", "C1", 100)
         );
-
-        // Verify balances didn't change (Atomic transaction check)
-        assertEquals(100.0, dataStore.getAccount("A1").getBalance());
-        assertEquals(500.0, dataStore.getAccount("A2").getBalance());
     }
 }

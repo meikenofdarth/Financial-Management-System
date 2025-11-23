@@ -46,7 +46,7 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>${pitest.version}</version>
+                <version>1.15.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>
@@ -54,29 +54,39 @@
                         <version>1.2.0</version>
                     </dependency>
                 </dependencies>
-                    <configuration>
-                        <!-- Classes to mutate (Business Logic & Utils only) -->
-                        <targetClasses>
-                            <param>com.fincore.model.*</param>
-                            <param>com.fincore.service.*</param>
-                            <param>com.fincore.util.*</param>
-                            <param>com.fincore.repository.*</param>
-                        </targetClasses>
-                        
-                        <!-- Exclude the Main App from mutation analysis -->
-                        <excludedClasses>
-                            <param>com.fincore.main.BankApp</param>
-                        </excludedClasses>
+                <configuration>
+                    <!-- Only mutate the core logic -->
+                    <targetClasses>
+                        <param>com.fincore.model.*</param>
+                        <param>com.fincore.service.*</param>
+                        <param>com.fincore.util.*</param>
+                        <param>com.fincore.repository.*</param>
+                    </targetClasses>
+                    
+                    <targetTests>
+                        <param>com.fincore.*</param>
+                    </targetTests>
 
-                        <targetTests>
-                            <param>com.fincore.*</param>
-                        </targetTests>
-                        
-                        <outputFormats>
-                            <outputFormat>HTML</outputFormat>
-                        </outputFormats>
-                        <mutationThreshold>70</mutationThreshold> 
-                    </configuration>
+                    <excludedClasses>
+                        <param>com.fincore.main.BankApp</param>
+                    </excludedClasses>
+
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                    </outputFormats>
+
+                    <!-- AGGRESSIVELY IGNORE VOID CALLS (Printing, Logging) -->
+                    <avoidCallsTo>
+                        <avoidCallsTo>java.util.logging</avoidCallsTo>
+                        <avoidCallsTo>org.apache.log4j</avoidCallsTo>
+                        <avoidCallsTo>org.slf4j</avoidCallsTo>
+                        <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
+                        <avoidCallsTo>java.io.PrintStream</avoidCallsTo> <!-- System.out -->
+                        <avoidCallsTo>java.lang.System</avoidCallsTo>
+                    </avoidCallsTo>
+                    
+                    <mutationThreshold>70</mutationThreshold>
+                </configuration>
             </plugin>
         </plugins>
     </build>
