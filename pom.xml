@@ -54,22 +54,29 @@
                         <version>1.2.0</version>
                     </dependency>
                 </dependencies>
-                <configuration>
-                    <!-- Classes to mutate -->
-                    <targetClasses>
-                        <param>com.fincore.*</param>
-                    </targetClasses>
-                    <!-- Classes to test -->
-                    <targetTests>
-                        <param>com.fincore.*</param>
-                    </targetTests>
-                    <!-- Output format -->
-                    <outputFormats>
-                        <outputFormat>HTML</outputFormat>
-                    </outputFormats>
-                    <!-- Stop if mutation score is low (Optional, enforces quality) -->
-                    <mutationThreshold>70</mutationThreshold> 
-                </configuration>
+                    <configuration>
+                        <!-- Classes to mutate (Business Logic & Utils only) -->
+                        <targetClasses>
+                            <param>com.fincore.model.*</param>
+                            <param>com.fincore.service.*</param>
+                            <param>com.fincore.util.*</param>
+                            <param>com.fincore.repository.*</param>
+                        </targetClasses>
+                        
+                        <!-- Exclude the Main App from mutation analysis -->
+                        <excludedClasses>
+                            <param>com.fincore.main.BankApp</param>
+                        </excludedClasses>
+
+                        <targetTests>
+                            <param>com.fincore.*</param>
+                        </targetTests>
+                        
+                        <outputFormats>
+                            <outputFormat>HTML</outputFormat>
+                        </outputFormats>
+                        <mutationThreshold>70</mutationThreshold> 
+                    </configuration>
             </plugin>
         </plugins>
     </build>

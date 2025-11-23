@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
-Test set: com.fincore.util.ValidationUtilTest
+Test set: com.fincore.service.LoanServiceTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in com.fincore.util.ValidationUtilTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in com.fincore.service.LoanServiceTest
