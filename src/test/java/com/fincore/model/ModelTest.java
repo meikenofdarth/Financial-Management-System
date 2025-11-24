@@ -97,4 +97,71 @@ class ModelTest {
         assertTrue(tStr.contains("T1"));
         assertTrue(tStr.contains("Desc"));
     }
+
+// ... existing tests ...
+
+    @Test
+    void testSavingsAccount_WithdrawBoundaries() {
+        // Min Balance is 500.00
+        SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
+
+        // 1. Test Safe Withdrawal
+        assertTrue(sa.canWithdraw(400.0));
+
+        // 2. Test EXACT Boundary (Killing ConditionalsBoundaryMutator)
+        // 1000 - 500 = 500. Logic is >= 500.
+        // Mutant changes >= to >. This assertion kills it.
+        assertTrue(sa.canWithdraw(500.0), "Should allow withdrawing down to exactly min balance");
+
+        // 3. Test Just Over Boundary
+        // 1000 - 500.01 = 499.99. Should fail.
+        assertFalse(sa.canWithdraw(500.01), "Should not allow withdrawing below min balance");
+    }
+
+    @Test
+    void testSavingsAccount_InactiveWithdraw() {
+        SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
+        sa.closeAccount();
+
+        // Killing NegateConditionalsMutator on "this.isActive"
+        // Even with enough balance, a closed account cannot withdraw
+        assertFalse(sa.canWithdraw(100.0));
+    }
+
+    @Test
+    void testSavingsAccount_InterestCalculation() {
+        // Setup: 1200 Balance. Rate is 0.04 (4%).
+        // Math: 1200 * (0.04 / 12) = 4.00 interest.
+        SavingsAccount sa = new SavingsAccount("S1", "C1", 1200.0);
+        int initialHistory = sa.getTransactionHistory().size();
+
+        sa.applyEndOfMonthBenefits();
+
+        // Killing MathMutator: Verify exact calculation
+        assertEquals(1204.00, sa.getBalance(), 0.001, "Interest calculation must be precise");
+
+        // Killing VoidMethodCallMutator: Verify transaction was added
+        assertEquals(initialHistory + 1, sa.getTransactionHistory().size(), "Interest application must record a transaction");
+        assertEquals("INTEREST", sa.getTransactionHistory().get(initialHistory).getType());
+    }
+
+    @Test
+    void testSavingsAccount_InterestEdgeCases() {
+        // 1. Inactive Account (Killing NegateConditionalsMutator on !isActive)
+        SavingsAccount saClosed = new SavingsAccount("S2", "C1", 1200.0);
+        saClosed.closeAccount();
+        saClosed.applyEndOfMonthBenefits();
+        assertEquals(1200.0, saClosed.getBalance(), "Closed account should not get interest");
+
+        // 2. Zero Balance (Killing ConditionalsBoundaryMutator on balance > 0)
+        SavingsAccount saZero = new SavingsAccount("S3", "C1", 0.0);
+        saZero.applyEndOfMonthBenefits();
+        assertEquals(0.0, saZero.getBalance());
+        
+        // 3. Negative Balance (Killing NegateConditionalsMutator)
+        // (Assuming we force a negative balance via constructor hack or logic bypass)
+        SavingsAccount saNeg = new SavingsAccount("S4", "C1", -100.0);
+        saNeg.applyEndOfMonthBenefits();
+        assertEquals(-100.0, saNeg.getBalance(), "Negative balance should not get interest");
+    }
 }
