@@ -3,10 +3,11 @@ package com.fincore.controller;
 import com.fincore.dto.*;
 import com.fincore.model.Account;
 import com.fincore.model.Customer;
-import com.fincore.model.Loan;
 import com.fincore.repository.DataStore;
 import com.fincore.service.AccountService;
 import com.fincore.service.LoanService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,9 @@ import java.util.UUID;
 
 @Controller
 public class BankController {
+
+    // 1. Initialize Logger for Security Audit
+    private static final Logger logger = LoggerFactory.getLogger(BankController.class);
 
     private final AccountService accountService = new AccountService();
     private final LoanService loanService = new LoanService();
@@ -32,10 +36,11 @@ public class BankController {
     }
 
     @PostMapping("/login")
-    // FIX 1: Added ("customerId")
     public String processLogin(@RequestParam("customerId") String customerId, Model model) {
         Customer c = dataStore.getCustomer(customerId);
         if (c == null) {
+            // Log failed login attempts (Brute force detection)
+            logger.warn("SECURITY ALERT: Failed Login Attempt. ID: [{}]", customerId);
             model.addAttribute("error", "Customer ID not found.");
             return "login";
         }
@@ -44,7 +49,6 @@ public class BankController {
 
     // --- DASHBOARD ---
     @GetMapping("/dashboard/{customerId}")
-    // FIX 2: Added ("customerId")
     public String dashboard(@PathVariable("customerId") String customerId, Model model) {
         Customer c = dataStore.getCustomer(customerId);
         if (c == null) return "redirect:/";
@@ -72,6 +76,8 @@ public class BankController {
             model.addAttribute("success", "Success! Your ID is: " + id + " (Save this!)");
             return "index";
         } catch (Exception e) {
+            // Log malicious input (e.g., SQL injection in name, weak passwords)
+            logger.warn("SECURITY ALERT: Registration Failed. Email: [{}]. Error: {}", dto.getEmail(), e.getMessage());
             model.addAttribute("error", e.getMessage());
             return "register";
         }
@@ -91,6 +97,7 @@ public class BankController {
             Account acc = accountService.createAccount(dto.getType(), accId, dto.getCustomerId(), dto.getInitialDeposit());
             return "redirect:/dashboard/" + dto.getCustomerId();
         } catch (Exception e) {
+            logger.warn("SECURITY ALERT: Account Creation Failed. CustID: [{}]. Error: {}", dto.getCustomerId(), e.getMessage());
             model.addAttribute("error", e.getMessage());
             return "create-account";
         }
@@ -117,6 +124,9 @@ public class BankController {
             model.addAttribute("success", "Transaction Successful");
             return "index";
         } catch (Exception e) {
+            // Log negative amounts or unauthorized access attempts
+            logger.warn("SECURITY ALERT: Suspicious Transaction. Account: [{}]. Amount: [{}]. Error: {}", 
+                dto.getAccountId(), dto.getAmount(), e.getMessage());
             model.addAttribute("error", e.getMessage());
             return "transaction";
         }
@@ -136,6 +146,8 @@ public class BankController {
             model.addAttribute("success", "Transfer Complete!");
             return "index";
         } catch (Exception e) {
+            logger.warn("SECURITY ALERT: Transfer Failed. From: [{}]. To: [{}]. Amount: [{}]. Error: {}", 
+                dto.getFromAccountId(), dto.getToAccountId(), dto.getAmount(), e.getMessage());
             model.addAttribute("error", e.getMessage());
             return "transfer";
         }
@@ -155,6 +167,9 @@ public class BankController {
             loanService.applyForLoan(loanId, dto.getCustomerId(), dto.getAmount(), dto.getTenureMonths());
             return "redirect:/dashboard/" + dto.getCustomerId();
         } catch (Exception e) {
+            // Log huge loan requests attempting to bypass income checks
+            logger.warn("SECURITY ALERT: Loan Application Rejected. CustID: [{}]. Amount: [{}]. Error: {}", 
+                dto.getCustomerId(), dto.getAmount(), e.getMessage());
             model.addAttribute("error", e.getMessage());
             return "loan";
         }
