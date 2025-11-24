@@ -1,9 +1,0 @@
-com/fincore/util/ValidationUtilTest.class
-com/fincore/model/ModelTest.class
-com/fincore/CoverageBoosterTest.class
-com/fincore/service/AccountServiceTest.class
-com/fincore/util/BoundaryKillerTest.class
-com/fincore/util/FinancialMathTest.class
-com/fincore/service/LoanServiceTest.class
-com/fincore/repository/DataStoreTest.class
-com/fincore/util/DateUtilTest.class
