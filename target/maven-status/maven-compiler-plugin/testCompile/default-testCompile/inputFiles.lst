@@ -1,6 +1,7 @@
 /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/service/LoanServiceTest.java
 /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/CoverageBoosterTest.java
 /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/util/FinancialMathTest.java
+/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/fuzz/PropertyFuzzTest.java
 /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/util/ValidationUtilTest.java
 /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/repository/DataStoreTest.java
 /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/src/test/java/com/fincore/util/DateUtilTest.java
