@@ -65,28 +65,7 @@ public class AccountService {
 
         if (!account.isActive()) {
             throw new IllegalStateException("Account is closed");
-        }
-
-        // Logic: Manually updating balance (no setter) to simulate transaction logic
-        // We could access balance directly if it were public, but here we might need a method in Account or update directly via reflection/package-private
-        // For this design, let's assume we implement a deposit method in Account or handle it here via casting if fields were public.
-        // To keep encapsulation, let's add a synchronized block here or assume single thread for simplicity.
-        // NOTE: In the Account model earlier, we didn't add a deposit method. 
-        // Real-world: Add deposit() to Account. For this project, let's assume we modify Account.java or do this:
-        
-        // *IMPORTANT*: Ideally, go back to Account.java and add a `deposit(double amount)` method.
-        // Since we are writing files linearly, let's assume we are handling it via a method we added or simple logic if fields were accessible.
-        // Let's rely on a helper or assume we can modify the state.
-        // EDIT: For the sake of this code block working with the previous one, we will cast or use a hack, 
-        // BUT the best practice is to add `public void deposit(double amount)` to Account.java.
-        // I will assume we added `public void deposit(double amount)` to Account.java for this to work cleanly.
-        
-        // Let's implement the logic assuming we can access specific methods or we update the object:
-        // Since `balance` is protected in `Account`, and `AccountService` is in a different package, we cannot access it directly.
-        // FIX: We need a `deposit` method in `Account.java`. 
-        // *Correction*: Since I can't edit previous messages, let's implement the logic here using a public method we *should* have added.
-        // Please add `public void deposit(double amount) { this.balance += amount; }` to your Account.java abstract class.
-        
+        }        
         account.deposit(amount); 
         
         Transaction t = new Transaction("DEP-" + System.currentTimeMillis(), accountId, "DEPOSIT", amount, "Cash Deposit");
@@ -102,8 +81,6 @@ public class AccountService {
         if (account == null) throw new IllegalArgumentException("Account not found");
 
         if (account.canWithdraw(amount)) {
-            // Again, assumes a `withdraw` method exists or we use `deposit(-amount)`
-            // Please add `public void withdraw(double amount) { this.balance -= amount; }` to Account.java
             account.withdraw(amount);
             
             Transaction t = new Transaction("WTH-" + System.currentTimeMillis(), accountId, "WITHDRAWAL", amount, "Cash Withdrawal");
@@ -116,7 +93,6 @@ public class AccountService {
 
     /**
      * Transfers money between two accounts.
-     * This is CRITICAL for Integration Testing.
      */
     public void transfer(String fromAccId, String toAccId, double amount) {
             if (fromAccId.equals(toAccId)) {

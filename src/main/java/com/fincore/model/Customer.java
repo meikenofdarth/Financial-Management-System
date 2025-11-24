@@ -26,29 +26,49 @@ public class Customer implements Serializable{
         this.yearlyIncome = yearlyIncome;
     }
 
-    public String getCustomerId() { return customerId; }
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
-    public String getFullName() { return firstName + " " + lastName; }
+    public String getCustomerId() {
+         return customerId; 
+    }
+    public String getFirstName() {
+         return firstName; 
+    }
+    public String getLastName() {
+         return lastName; 
+    }
+    public String getFullName() {
+         return firstName + " " + lastName; 
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getEmail() {
+         return email; 
+    }
+    public void setEmail(String email) {
+         this.email = email; 
+    }
 
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public String getPhoneNumber() {
+         return phoneNumber; 
+    }
+    public void setPhoneNumber(String phoneNumber) {
+         this.phoneNumber = phoneNumber; 
+    }
 
     public boolean verifyPassword(String inputPassword) {
         return this.password.equals(inputPassword);
     }
 
-    public int getCreditScore() { return creditScore; }
+    public int getCreditScore() {
+         return creditScore; 
+    }
     public void setCreditScore(int creditScore) { 
         if(creditScore >= 300 && creditScore <= 850) {
             this.creditScore = creditScore; 
         }
     }
 
-    public double getYearlyIncome() { return yearlyIncome; }
+    public double getYearlyIncome() {
+         return yearlyIncome; 
+    }
 
     @Override
     public String toString() {

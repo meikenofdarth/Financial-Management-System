@@ -9,15 +9,9 @@ import com.fincore.util.FinancialMath;
 import com.fincore.util.ValidationUtil;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * THE COVERAGE BOOSTER
- * Purpose: Execute every single line of code to eliminate "No Coverage" mutants.
- */
+// This test class is written to kill no coverage mutants
 class CoverageBoosterTest {
 
     @Test
@@ -30,15 +24,15 @@ class CoverageBoosterTest {
         assertEquals(100.0, t.getAmount());
         assertEquals("Desc", t.getDescription());
         assertNotNull(t.getTimestamp());
-        assertNotNull(t.toString()); // Hit toString
+        assertNotNull(t.toString()); 
 
         // 2. Customer
         Customer c = new Customer("C1", "John", "D", "j@d.com", "pass", 700, 50000);
         c.setPhoneNumber("123");
         c.setEmail("new@d.com");
         c.setCreditScore(800);
-        c.setCreditScore(200); // Invalid low
-        c.setCreditScore(900); // Invalid high
+        c.setCreditScore(200); 
+        c.setCreditScore(900); 
         
         assertEquals("123", c.getPhoneNumber());
         assertEquals("new@d.com", c.getEmail());
@@ -49,15 +43,15 @@ class CoverageBoosterTest {
 
         // 3. Savings Account
         SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
-        sa.applyEndOfMonthBenefits(); // Hit logic
-        sa.closeAccount(); // Hit close
+        sa.applyEndOfMonthBenefits(); 
+        sa.closeAccount(); 
         assertFalse(sa.isActive());
         assertEquals(0.04, sa.getInterestRate());
         assertNotNull(sa.toString());
 
         // 4. Current Account
         CurrentAccount ca = new CurrentAccount("CA1", "C1", -50.0, 500.0);
-        ca.applyEndOfMonthBenefits(); // Hit overdraft fee logic
+        ca.applyEndOfMonthBenefits(); 
         ca.setOverdraftLimit(600.0);
         assertEquals(600.0, ca.getOverdraftLimit());
         assertNotNull(ca.toString());
@@ -68,7 +62,6 @@ class CoverageBoosterTest {
         assertEquals(500, l.getTotalAmountPaid());
         assertNotNull(l.toString());
         
-        // Error case in Loan
         Loan closedLoan = new Loan("L2", "C1", 100, 5, 1);
         closedLoan.makeRepayment(100);
         assertThrows(IllegalStateException.class, () -> closedLoan.makeRepayment(10));

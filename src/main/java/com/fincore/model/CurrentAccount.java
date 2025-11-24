@@ -16,7 +16,6 @@ public class CurrentAccount extends Account {
         if (!isActive) return false;
         
         // Logic: Can withdraw if balance + overdraft covers the amount
-        // Mutation Target: Change '+' to '-'
         return (this.balance + this.overdraftLimit) >= amount;
     }
 

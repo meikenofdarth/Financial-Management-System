@@ -15,7 +15,7 @@ public class LoanService {
     /**
      * Applies for a loan.
      * Logic:
-     * 1. Credit Score must be > 600.
+     * 1. Credit Score must be >= 600.
      * 2. Loan amount must not exceed 5x yearly income.
      */
     public Loan applyForLoan(String loanId, String customerId, double amount, int months) {
@@ -36,7 +36,6 @@ public class LoanService {
         }
 
         // Determine Interest Rate based on Credit Score
-        // High complexity logic for Mutation Testing
         double rate;
         if (customer.getCreditScore() >= 750) {
             rate = 6.5; // Prime rate
@@ -65,9 +64,6 @@ public class LoanService {
         if (loan.isClosed()) {
             throw new IllegalStateException("Loan is already paid off");
         }
-        
-        // In a real system, we would split principal vs interest here.
-        // For this project, we delegate to the model.
         loan.makeRepayment(amount);
     }
 }

@@ -26,12 +26,24 @@ public class Transaction implements Serializable{
     }
 
     // Getters
-    public String getTransactionId() { return transactionId; }
-    public String getAccountId() { return accountId; }
-    public String getType() { return type; }
-    public double getAmount() { return amount; }
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public String getDescription() { return description; }
+    public String getTransactionId() {
+         return transactionId; 
+    }
+    public String getAccountId() {
+         return accountId; 
+    }
+    public String getType() {
+         return type; 
+    }
+    public double getAmount() {
+         return amount; 
+    }
+    public LocalDateTime getTimestamp() {
+         return timestamp; 
+    }
+    public String getDescription() {
+         return description; 
+    }
 
     @Override
     public String toString() {

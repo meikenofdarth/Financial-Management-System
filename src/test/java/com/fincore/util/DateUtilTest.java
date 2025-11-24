@@ -8,16 +8,13 @@ class DateUtilTest {
 
     @Test
     void testGetDaysBetween() {
-        LocalDate start = LocalDate.of(2023, 1, 1);
-        LocalDate end = LocalDate.of(2023, 1, 10);
-        
-        // Expected: 9 days
+        LocalDate start = LocalDate.of(2025, 1, 1);
+        LocalDate end = LocalDate.of(2025, 1, 10);
         assertEquals(9, DateUtil.getDaysBetween(start, end));
     }
     
     @Test
-    void testGetDaysBetween_Nulls() {
-        // Kills mutants that remove the null check
+    void testGetDaysBetweenNulls() {
         assertThrows(IllegalArgumentException.class, () -> 
             DateUtil.getDaysBetween(null, LocalDate.now()));
             
@@ -27,27 +24,25 @@ class DateUtilTest {
 
     @Test
     void testIsDateInFuture() {
-        // Kills Relational Operator mutants (changing > to >=)
         assertTrue(DateUtil.isDateInFuture(LocalDate.now().plusDays(1)));
         assertFalse(DateUtil.isDateInFuture(LocalDate.now().minusDays(1)));
-        assertFalse(DateUtil.isDateInFuture(LocalDate.now())); // Boundary check
+        assertFalse(DateUtil.isDateInFuture(LocalDate.now())); 
     }
     
     @Test
-    void testIsDateInFuture_Null() {
+    void testIsDateInFutureNull() {
         assertFalse(DateUtil.isDateInFuture(null));
     }
 
     @Test
     void testAddMonths() {
-        LocalDate date = LocalDate.of(2023, 1, 31);
-        // Java date math handles end-of-month automatically
+        LocalDate date = LocalDate.of(2025, 1, 31);
         LocalDate result = DateUtil.addMonths(date, 1); 
-        assertEquals(LocalDate.of(2023, 2, 28), result); // 2023 is not leap year
+        assertEquals(LocalDate.of(2025, 2, 28), result);
     }
     
     @Test
-    void testAddMonths_Null() {
+    void testAddMonthsNull() {
         assertNull(DateUtil.addMonths(null, 5));
     }
 }

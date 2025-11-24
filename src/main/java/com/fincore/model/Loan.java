@@ -28,16 +28,28 @@ public class Loan implements Serializable{
         this.startDate = LocalDate.now();
     }
 
-    public String getLoanId() { return loanId; }
-    public String getCustomerId() { return customerId; }
+    public String getLoanId() {
+         return loanId; 
+    }
+    public String getCustomerId() {
+         return customerId; 
+    }
     
-    public double getPrincipalAmount() { return principalAmount; }
+    public double getPrincipalAmount() {
+         return principalAmount; 
+    }
     
-    public double getInterestRate() { return interestRate; }
+    public double getInterestRate() {
+         return interestRate; 
+    }
     
-    public int getTenureInMonths() { return tenureInMonths; }
+    public int getTenureInMonths() {
+         return tenureInMonths; 
+    }
     
-    public boolean isClosed() { return isClosed; }
+    public boolean isClosed() {
+         return isClosed; 
+    }
 
     public void makeRepayment(double amount) {
         if (isClosed) {
@@ -55,7 +67,9 @@ public class Loan implements Serializable{
         }
     }
 
-    public double getTotalAmountPaid() { return totalAmountPaid; }
+    public double getTotalAmountPaid() {
+         return totalAmountPaid; 
+    }
 
     @Override
     public String toString() {
