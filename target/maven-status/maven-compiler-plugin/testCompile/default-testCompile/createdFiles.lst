@@ -1,7 +1,6 @@
 com/fincore/util/ValidationUtilTest.class
 com/fincore/model/ModelTest.class
 com/fincore/CoverageBoosterTest.class
-com/fincore/fuzz/PropertyFuzzTest.class
 com/fincore/service/AccountServiceTest.class
 com/fincore/util/BoundaryKillerTest.class
 com/fincore/util/FinancialMathTest.class

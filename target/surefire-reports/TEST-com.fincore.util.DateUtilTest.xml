@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.fincore.util.DateUtilTest" time="0.004" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.fincore.util.DateUtilTest" time="0.006" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="22"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
-    <property name="java.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/test-classes:/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/classes:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik/1.7.4/jqwik-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-api/1.7.4/jqwik-api-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-web/1.7.4/jqwik-web-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-time/1.7.4/jqwik-time-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-engine/1.7.4/jqwik-engine-1.7.4.jar:"/>
+    <property name="java.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/test-classes:/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/classes:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:"/>
     <property name="java.vm.vendor" value="Oracle Corporation"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://java.oracle.com/"/>
@@ -13,10 +13,10 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk-22.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/surefire/surefirebooter-20251124181502838_3.jar /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/surefire 2025-11-24T18-15-02_796-jvmRun1 surefire-20251124181502838_1tmp surefire_0-20251124181502838_2tmp"/>
+    <property name="sun.java.command" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/surefire/surefirebooter-20251124181707657_3.jar /Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/surefire 2025-11-24T18-17-07_629-jvmRun1 surefire-20251124181707657_1tmp surefire_0-20251124181707657_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
-    <property name="surefire.test.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/test-classes:/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/classes:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik/1.7.4/jqwik-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-api/1.7.4/jqwik-api-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-web/1.7.4/jqwik-web-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-time/1.7.4/jqwik-time-1.7.4.jar:/Users/sanchitkumardogra/.m2/repository/net/jqwik/jqwik-engine/1.7.4/jqwik-engine-1.7.4.jar:"/>
+    <property name="surefire.test.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/test-classes:/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/classes:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter/5.9.2/junit-jupiter-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.9.2/junit-jupiter-params-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/Users/sanchitkumardogra/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="/Users/sanchitkumardogra"/>
     <property name="user.language" value="en"/>
@@ -30,7 +30,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/surefire/surefirebooter-20251124181502838_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/sanchitkumardogra/kaam/clg/SEM7/ST/Financial-Management-System/target/surefire/surefirebooter-20251124181707657_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="22.0.1+8-16"/>
@@ -58,10 +58,10 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="66.0"/>
   </properties>
-  <testcase name="testIsDateInFuture_Null" classname="com.fincore.util.DateUtilTest" time="0.0"/>
+  <testcase name="testIsDateInFuture_Null" classname="com.fincore.util.DateUtilTest" time="0.001"/>
   <testcase name="testIsDateInFuture" classname="com.fincore.util.DateUtilTest" time="0.0"/>
-  <testcase name="testAddMonths" classname="com.fincore.util.DateUtilTest" time="0.001"/>
+  <testcase name="testAddMonths" classname="com.fincore.util.DateUtilTest" time="0.002"/>
   <testcase name="testAddMonths_Null" classname="com.fincore.util.DateUtilTest" time="0.0"/>
-  <testcase name="testGetDaysBetween_Nulls" classname="com.fincore.util.DateUtilTest" time="0.0"/>
+  <testcase name="testGetDaysBetween_Nulls" classname="com.fincore.util.DateUtilTest" time="0.001"/>
   <testcase name="testGetDaysBetween" classname="com.fincore.util.DateUtilTest" time="0.0"/>
 </testsuite>

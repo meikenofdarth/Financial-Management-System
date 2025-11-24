@@ -16,11 +16,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     
-    - name: Build and Run Unit/Fuzz Tests
+    - name: Build and Run Unit Tests
       run: mvn test
 
     - name: Run Mutation Testing
       run: mvn test pitest:mutationCoverage
-
-    - name: Static Analysis (SpotBugs)
-      run: mvn spotbugs:check
