@@ -164,4 +164,98 @@ class ModelTest {
         saNeg.applyEndOfMonthBenefits();
         assertEquals(-100.0, saNeg.getBalance(), "Negative balance should not get interest");
     }
+    @Test
+    void testCurrentAccount_WithdrawBoundaries() {
+        // Setup: Balance 1000.0, Overdraft Limit 500.0.
+        // Total Buying Power = 1500.0
+        CurrentAccount ca = new CurrentAccount("C1", "U1", 1000.0, 500.0);
+
+        // 1. Test Safe Withdrawal (Within Balance)
+        assertTrue(ca.canWithdraw(900.0));
+
+        // 2. Test Withdrawal using Overdraft (Killing MathMutator on + vs -)
+        // Logic: Balance + Limit (1000 + 500 = 1500).
+        // Mutant: Balance - Limit (1000 - 500 = 500).
+        // If we withdraw 600, Original passes, Mutant fails.
+        assertTrue(ca.canWithdraw(600.0), "Should allow withdrawal using overdraft portion");
+
+        // 3. Test EXACT Boundary (Killing ConditionalsBoundaryMutator)
+        // Total Power: 1500. Logic is >= amount.
+        // Mutant changes >= to >. This assertion kills it.
+        assertTrue(ca.canWithdraw(1500.0), "Should allow withdrawing exactly (Balance + Overdraft)");
+
+        // 4. Test Just Over Boundary
+        // 1500.01 should fail.
+        assertFalse(ca.canWithdraw(1500.01), "Should not allow withdrawing beyond overdraft limit");
+    }
+
+    @Test
+    void testCurrentAccount_InactiveWithdraw() {
+        CurrentAccount ca = new CurrentAccount("C1", "U1", 1000.0, 500.0);
+        ca.closeAccount();
+
+        // Killing NegateConditionalsMutator on "this.isActive"
+        // Even with huge overdraft limit, a closed account cannot withdraw
+        assertFalse(ca.canWithdraw(100.0));
+    }
+
+    @Test
+    void testCurrentAccount_EndOfMonth_ApplyFee() {
+        // Setup: Negative Balance (-100). Logic: if (balance < 0).
+        CurrentAccount ca = new CurrentAccount("C1", "U1", -100.0, 500.0);
+        int initialHistory = ca.getTransactionHistory().size();
+
+        ca.applyEndOfMonthBenefits();
+
+        // 1. Verify Fee Calculation (Killing MathMutator)
+        // -100 - 25 = -125.
+        assertEquals(-125.0, ca.getBalance(), 0.001, "Fee of 25.00 should be subtracted from negative balance");
+
+        // 2. Verify Transaction (Killing VoidMethodCallMutator)
+        assertEquals(initialHistory + 1, ca.getTransactionHistory().size(), "Fee application must record a transaction");
+        Transaction t = ca.getTransactionHistory().get(initialHistory);
+        assertEquals("FEE", t.getType());
+        assertEquals(25.0, t.getAmount(), 0.001);
+    }
+
+    @Test
+    void testCurrentAccount_EndOfMonth_FeeBoundary() {
+        // 1. Positive Balance (No Fee)
+        CurrentAccount caPos = new CurrentAccount("C2", "U1", 100.0, 500.0);
+        caPos.applyEndOfMonthBenefits();
+        assertEquals(100.0, caPos.getBalance(), "Positive balance should not incur fee");
+
+        // 2. EXACT Zero Balance (Killing ConditionalsBoundaryMutator)
+        // Logic is: if (balance < 0).
+        // Mutant changes < to <=.
+        // If balance is 0.0: Original (False) -> No Fee. Mutant (True) -> Fee applied.
+        CurrentAccount caZero = new CurrentAccount("C3", "U1", 0.0, 500.0);
+        caZero.applyEndOfMonthBenefits();
+        assertEquals(0.0, caZero.getBalance(), "Zero balance should not incur overdraft fee");
+    }
+
+    @Test
+    void testCurrentAccount_SettersAndOverdraftLogic() {
+        CurrentAccount ca = new CurrentAccount("C4", "U1", 0.0, 0.0);
+        
+        // Verify Setter works (Killing VoidMethodCallMutator if setter is empty)
+        ca.setOverdraftLimit(200.0);
+        assertEquals(200.0, ca.getOverdraftLimit(), 0.001);
+        
+        // Verify new limit is actually used in logic
+        assertTrue(ca.canWithdraw(150.0));
+        assertFalse(ca.canWithdraw(250.0));
+    }
+
+    @Test
+    void testCurrentAccount_ToString() {
+        // Good for coverage, ensures values are mapped correctly
+        CurrentAccount ca = new CurrentAccount("ACC-99", "CUST-1", 500.50, 200.00);
+        String result = ca.toString();
+        
+        assertTrue(result.contains("ACC-99"));
+        assertTrue(result.contains("500.50"));
+        assertTrue(result.contains("200.00"));
+        assertTrue(result.contains("Current Account"));
+    }
 }

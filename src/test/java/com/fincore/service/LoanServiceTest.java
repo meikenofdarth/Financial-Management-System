@@ -108,5 +108,80 @@ void testLoanClosureBehavior() {
     // After paying: loan must be marked closed
     assertTrue(loan.isClosed(), "Loan should be closed after full repayment");
 }
+@Test
+    void testApplyForLoan_Boundary_Score750() {
+        // Logic: if (score >= 750) -> 6.5%. 
+        // Mutant: if (score > 750).
+        // If score is 750: Original=True (6.5). Mutant=False (Fall through to 7.5).
+        accountService.registerCustomer("C_Prime", "Test", "User", "p@t.com", "Pass@123", 750, 50000);
+        
+        Loan loan = loanService.applyForLoan("L_Prime", "C_Prime", 10000, 12);
+        
+        assertEquals(6.5, loan.getInterestRate(), "Score 750 exactly should still get 6.5%");
+    }
 
+    @Test
+    void testApplyForLoan_Boundary_Score700() {
+        // Logic: else if (score >= 700) -> 7.5%.
+        // Mutant: else if (score > 700).
+        // If score is 700: Original=True (7.5). Mutant=False (Fall through to 9.0).
+        accountService.registerCustomer("C_Mid", "Test", "User", "m@t.com", "Pass@123", 700, 50000);
+        
+        Loan loan = loanService.applyForLoan("L_Mid", "C_Mid", 10000, 12);
+        
+        assertEquals(7.5, loan.getInterestRate(), "Score 700 exactly should get 7.5%");
+    }
+    @Test
+    void testApplyForLoan_Boundary_Score600() {
+        // Logic: if (score < 600) throw.
+        // Mutant: if (score <= 600) throw.
+        // If score is 600: Original=False (Safe). Mutant=True (Throws Exception).
+        accountService.registerCustomer("C_Low", "Test", "User", "l@t.com", "Pass@123", 600, 50000);
+        
+        Loan loan = loanService.applyForLoan("L_Low", "C_Low", 10000, 12);
+        
+        assertNotNull(loan);
+        assertEquals(9.0, loan.getInterestRate());
+    }
+    @Test
+    void testApplyForLoan_SideEffect_DataStoreUpdate() {
+        accountService.registerCustomer("C_Store", "Test", "User", "s@t.com", "Pass@123", 750, 50000);
+        
+        loanService.applyForLoan("L_Store", "C_Store", 10000, 12);
+        
+        // Kill VoidMethodCallMutator on dataStore.addLoan(loan)
+        Loan storedLoan = dataStore.getLoan("L_Store");
+        assertNotNull(storedLoan, "Loan must be persisted in DataStore");
+    }
+    @Test
+    void testApplyForLoan_InvalidCustomer() {
+        // Kill NullReturn or Conditional Negation on (customer == null)
+        assertThrows(IllegalArgumentException.class, () -> 
+            loanService.applyForLoan("L_X", "NON_EXISTENT_ID", 1000, 12)
+        );
+    }
+
+    @Test
+    void testPayLoanInstallment_InvalidLoanId() {
+        // Kill (loan == null) check removal
+        assertThrows(IllegalArgumentException.class, () -> 
+            loanService.payLoanInstallment("INVALID_ID", 100)
+        );
+    }
+
+    @Test
+    void testPayLoanInstallment_AlreadyClosed() {
+        accountService.registerCustomer("C_Closed", "C", "User", "c@t.com", "Pass@123", 750, 50000);
+        loanService.applyForLoan("L_Closed", "C_Closed", 1000, 12);
+        
+        // Close it manually
+        Loan loan = dataStore.getLoan("L_Closed");
+        loan.makeRepayment(2000); // Overpay to close
+        assertTrue(loan.isClosed());
+        
+        // Kill NegateConditionalsMutator on if(loan.isClosed())
+        assertThrows(IllegalStateException.class, () -> 
+            loanService.payLoanInstallment("L_Closed", 100)
+        );
+    }
 }
