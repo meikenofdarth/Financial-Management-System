@@ -1,8 +1,10 @@
 package com.fincore.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Loan {
+public class Loan implements Serializable{
+    private static final long serialVersionUID = 1L;
     private String loanId;
     private String customerId;
     private double principalAmount;

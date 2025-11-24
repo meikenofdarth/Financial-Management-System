@@ -1,9 +1,11 @@
 package com.fincore.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Account {
+public abstract class Account implements Serializable{
+    private static final long serialVersionUID = 1L;
     protected String accountId;
     protected String customerId;
     protected double balance;

@@ -216,9 +216,9 @@ public class BankApp {
     
     // Admin helper to see data during manual testing
     private static void handleShowAllCustomers() {
-        // Since DataStore doesn't expose list directly, we can't easily iterate 
-        // without adding a method there. For now, just a placeholder or 
-        // implies we should add getAllCustomers() to DataStore.
-        System.out.println("Admin feature not fully implemented in this demo.");
+        System.out.println("\n--- All Registered Customers ---");
+        List<Customer> list = dataStore.getAllCustomers();
+        for(Customer c : list) 
+            System.out.println(c.getCustomerId() + " : " + c.getFullName());
     }
 }

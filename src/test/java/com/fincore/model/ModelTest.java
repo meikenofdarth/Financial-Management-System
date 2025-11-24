@@ -11,6 +11,8 @@ class ModelTest {
         
         // Exercise every getter
         assertEquals("C1", c.getCustomerId());
+        assertEquals("John", c.getFirstName());
+        assertEquals("Doe", c.getLastName());
         assertEquals("John Doe", c.getFullName());
         assertEquals("j@d.com", c.getEmail());
         assertTrue(c.verifyPassword("pass"));

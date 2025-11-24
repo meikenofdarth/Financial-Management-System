@@ -4,38 +4,75 @@ import com.fincore.model.Account;
 import com.fincore.model.Customer;
 import com.fincore.model.Loan;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * In-memory database to store Customers, Accounts, and Loans.
- * Implements Singleton pattern to ensure a single source of truth.
+ * Persisted database using Java Serialization.
+ * Stores data in 'bank_data.ser' in the project root.
  */
-public class DataStore {
-    private static DataStore instance;
+public class DataStore implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    private static final String FILE_PATH = "bank_data.ser";
+    
+    // The instance is not transient, but we handle it manually in getInstance
+    private static transient DataStore instance;
 
     private Map<String, Customer> customers;
     private Map<String, Account> accounts;
     private Map<String, Loan> loans;
 
+    // Private constructor for Singleton
     private DataStore() {
         customers = new HashMap<>();
         accounts = new HashMap<>();
         loans = new HashMap<>();
     }
 
+    /**
+     * Loads data from file if it exists, otherwise creates a new instance.
+     */
     public static synchronized DataStore getInstance() {
         if (instance == null) {
-            instance = new DataStore();
+            instance = loadData();
         }
         return instance;
     }
 
-    // Customer Operations
+    // --- Persistence Methods ---
+
+    // Save the current state of this object to a file
+    private void saveData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
+            oos.writeObject(this);
+            // System.out.println("DEBUG: Data saved to disk."); // Uncomment for debugging
+        } catch (IOException e) {
+            System.err.println("Error saving data: " + e.getMessage());
+        }
+    }
+
+    // Load the object from the file
+    private static DataStore loadData() {
+        File file = new File(FILE_PATH);
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                return (DataStore) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Error loading existing data. Starting fresh. Error: " + e.getMessage());
+            }
+        }
+        return new DataStore();
+    }
+
+    // --- Customer Operations ---
+    
     public void addCustomer(Customer customer) {
         customers.put(customer.getCustomerId(), customer);
+        saveData(); // <--- This saves the data immediately
     }
 
     public Customer getCustomer(String customerId) {
@@ -43,7 +80,6 @@ public class DataStore {
     }
     
     public Customer getCustomerByEmail(String email) {
-        // Linear search - good for creating loops for testing
         for (Customer c : customers.values()) {
             if (c.getEmail().equalsIgnoreCase(email)) {
                 return c;
@@ -51,10 +87,17 @@ public class DataStore {
         }
         return null;
     }
+    
+    // Helper for Admin to see all users
+    public List<Customer> getAllCustomers() {
+        return new ArrayList<>(customers.values());
+    }
 
-    // Account Operations
+    // --- Account Operations ---
+    
     public void addAccount(Account account) {
         accounts.put(account.getAccountId(), account);
+        saveData(); // <--- Save
     }
 
     public Account getAccount(String accountId) {
@@ -71,9 +114,11 @@ public class DataStore {
         return customerAccounts;
     }
 
-    // Loan Operations
+    // --- Loan Operations ---
+    
     public void addLoan(Loan loan) {
         loans.put(loan.getLoanId(), loan);
+        saveData(); // <--- Save
     }
 
     public Loan getLoan(String loanId) {
@@ -95,5 +140,6 @@ public class DataStore {
         customers.clear();
         accounts.clear();
         loans.clear();
+        saveData();
     }
 }

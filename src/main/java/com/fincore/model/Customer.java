@@ -1,9 +1,12 @@
 package com.fincore.model;
 
+import java.io.Serializable;
+
 /**
  * Represents a customer in the banking system.
  */
-public class Customer {
+public class Customer implements Serializable{
+    private static final long serialVersionUID = 1L;
     private String customerId;
     private String firstName;
     private String lastName;
@@ -24,7 +27,8 @@ public class Customer {
     }
 
     public String getCustomerId() { return customerId; }
-    
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
     public String getFullName() { return firstName + " " + lastName; }
 
     public String getEmail() { return email; }

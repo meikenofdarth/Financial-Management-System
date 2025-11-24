@@ -1,12 +1,14 @@
 package com.fincore.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
  * Represents a single financial transaction in the system.
  */
-public class Transaction {
+public class Transaction implements Serializable{
+    private static final long serialVersionUID = 1L;
     private String transactionId;
     private String accountId;
     private String type; // DEPOSIT, WITHDRAWAL, TRANSFER, LOAN_DISBURSAL, INTEREST
