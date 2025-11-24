@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #ecf0f1; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        .btn { padding: 5px 10px; background: #3498db; color: white; text-decoration: none; border-radius: 3px; font-size: 14px; margin-right: 5px;}
+        .actions { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 th:text="${customer.fullName} + ' (' + ${customer.customerId} + ')'"></h2>
+        <p>Email: <span th:text="${customer.email}"></span> | Credit Score: <span th:text="${customer.creditScore}"></span></p>
+    </div>
+
+    <div class="actions">
+        <a href="/create-account" class="btn">Open New Account</a>
+        <a href="/transaction" class="btn">Deposit / Withdraw</a>
+        <a href="/transfer" class="btn">Transfer Funds</a>
+        <a href="/loan" class="btn">Apply for Loan</a>
+        <a href="/" class="btn" style="background: grey;">Logout</a>
+    </div>
+
+    <div class="card">
+        <h3>Accounts</h3>
+        <table>
+            <tr><th>Account ID</th><th>Type</th><th>Balance</th><th>Status</th></tr>
+            <tr th:each="acc : ${accounts}">
+                <td th:text="${acc.accountId}"></td>
+                <td th:text="${acc.accountType}"></td>
+                <td th:text="'$' + ${acc.balance}"></td>
+                <td th:text="${acc.active ? 'Active' : 'Closed'}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Loans</h3>
+        <table>
+            <tr><th>Loan ID</th><th>Amount</th><th>Interest</th><th>Tenure</th><th>Status</th></tr>
+            <tr th:each="l : ${loans}">
+                <td th:text="${l.loanId}"></td>
+                <td th:text="${l.principalAmount}"></td>
+                <td th:text="${l.interestRate} + '%'"></td>
+                <td th:text="${l.tenureInMonths} + ' m'"></td>
+                <td th:text="${l.closed ? 'Paid' : 'Active'}"></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

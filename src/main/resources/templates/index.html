@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FinCore Bank</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; text-align: center; background-color: #f4f4f9; }
+        h1 { color: #2c3e50; }
+        .btn { display: inline-block; padding: 15px 30px; margin: 10px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 18px; }
+        .btn:hover { background: #2980b9; }
+        .alert { color: green; font-weight: bold; padding: 10px; border: 1px solid green; background: #d4edda; margin-bottom: 20px;}
+    </style>
+</head>
+<body>
+    <h1>FinCore Banking System</h1>
+    <div class="alert" th:if="${success}" th:text="${success}"></div>
+
+    <a href="/register" class="btn">Register New Customer</a>
+    <a href="/login" class="btn" style="background: #27ae60;">Customer Login / Dashboard</a>
+</body>
+</html>

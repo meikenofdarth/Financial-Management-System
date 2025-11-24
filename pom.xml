@@ -8,53 +8,65 @@
     <artifactId>fincore-banking</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <!-- 1. Spring Boot Parent: Manages all versions -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.2</version>
+        <relativePath/> 
+    </parent>
+
     <properties>
+        <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>5.9.2</junit.version>
-        <pitest.version>1.15.0</pitest.version>
+        <pitest.version>1.16.1</pitest.version>
     </properties>
 
     <dependencies>
-        <!-- JUnit 5 for Testing -->
+        <!-- 2. Web Support (Tomcat, REST, Controllers) -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 3. HTML View Engine (Thymeleaf) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- 4. Testing (Includes JUnit 5, Mockito, etc.) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Compiler Plugin -->
+            <!-- Spring Boot Build Plugin (Makes the app executable) -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-            </plugin>
-
-            <!-- Surefire Plugin (Runs JUnit tests) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
             <!-- PITest Mutation Testing Plugin -->
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.16.1</version>  <!-- UPDATED VERSION -->
+                <version>${pitest.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>1.2.1</version> <!-- Updated Plugin -->
+                        <version>1.2.1</version>
                     </dependency>
                 </dependencies>
                 <configuration>
+                    <!-- Target ONLY logic classes (High Mutation Score Strategy) -->
                     <targetClasses>
                         <param>com.fincore.model.*</param>
                         <param>com.fincore.service.*</param>
@@ -66,14 +78,18 @@
                         <param>com.fincore.*</param>
                     </targetTests>
 
+                    <!-- Exclude Web Controllers and Main App from Mutation -->
                     <excludedClasses>
-                        <param>com.fincore.main.BankApp</param>
+                        <param>com.fincore.FinCoreApplication</param>
+                        <param>com.fincore.controller.*</param>
+                        <param>com.fincore.dto.*</param>
                     </excludedClasses>
 
                     <outputFormats>
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
 
+                    <!-- Ignore Logging/Printing to avoid False Positives -->
                     <avoidCallsTo>
                         <avoidCallsTo>java.util.logging</avoidCallsTo>
                         <avoidCallsTo>org.apache.log4j</avoidCallsTo>

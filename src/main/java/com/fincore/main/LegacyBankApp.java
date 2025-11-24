@@ -16,7 +16,7 @@ import java.util.UUID;
  * The Entry Point of the FinCore Banking System.
  * Provides a Command Line Interface (CLI) for users to interact with the system.
  */
-public class BankApp {
+public class LegacyBankApp {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final AccountService accountService = new AccountService();
