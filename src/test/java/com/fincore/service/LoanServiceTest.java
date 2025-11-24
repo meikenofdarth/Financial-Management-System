@@ -21,7 +21,7 @@ class LoanServiceTest {
         loanService = new LoanService();
         accountService = new AccountService();
     }
-
+    
     @Test
     void testApplyForLoan_Success_PrimeRate() {
         // Score 750+ gets 6.5% interest
@@ -88,4 +88,25 @@ class LoanServiceTest {
             loanService.applyForLoan("L100", "C99", 100000.01, 12)
         );
     }
+    @Test
+void testLoanClosureBehavior() {
+    // Register valid customer
+    accountService.registerCustomer(
+        "C10", "John", "Doe", "john@test.com",
+        "Pass@123", 750, 50000
+    );
+
+    // Apply for loan
+    Loan loan = loanService.applyForLoan("L10", "C10", 1000, 12);
+
+    // At start: loan should NOT be closed
+    assertFalse(loan.isClosed(), "Loan should start as active");
+
+    // Repay full amount to close the loan
+    loan.makeRepayment(1000);
+
+    // After paying: loan must be marked closed
+    assertTrue(loan.isClosed(), "Loan should be closed after full repayment");
+}
+
 }
