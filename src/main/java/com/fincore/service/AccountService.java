@@ -91,6 +91,7 @@ public class AccountService {
         
         Transaction t = new Transaction("DEP-" + System.currentTimeMillis(), accountId, "DEPOSIT", amount, "Cash Deposit");
         account.addTransaction(t);
+        dataStore.addAccount(account); 
     }
 
     /**
@@ -107,6 +108,7 @@ public class AccountService {
             
             Transaction t = new Transaction("WTH-" + System.currentTimeMillis(), accountId, "WITHDRAWAL", amount, "Cash Withdrawal");
             account.addTransaction(t);
+            dataStore.addAccount(account);
         } else {
             throw new IllegalStateException("Insufficient funds or limit reached");
         }
@@ -117,29 +119,34 @@ public class AccountService {
      * This is CRITICAL for Integration Testing.
      */
     public void transfer(String fromAccId, String toAccId, double amount) {
-        if (fromAccId.equals(toAccId)) {
-            throw new IllegalArgumentException("Cannot transfer to same account");
+            if (fromAccId.equals(toAccId)) {
+                throw new IllegalArgumentException("Cannot transfer to same account");
+            }
+
+            Account from = dataStore.getAccount(fromAccId);
+            Account to = dataStore.getAccount(toAccId);
+
+            if (from == null || to == null) {
+                throw new IllegalArgumentException("One or both accounts not found");
+            }
+
+            // Integration Logic: Check source
+            if (from.canWithdraw(amount)) {
+                // Step 1: Deduct from source in memory
+                from.withdraw(amount);
+                from.addTransaction(new Transaction("TRF-OUT-" + System.currentTimeMillis(), fromAccId, "TRANSFER_OUT", amount, "To " + toAccId));
+
+                // Step 2: Add to destination in memory
+                to.deposit(amount);
+                to.addTransaction(new Transaction("TRF-IN-" + System.currentTimeMillis(), toAccId, "TRANSFER_IN", amount, "From " + fromAccId));
+                
+                // Step 3: PERSIST CHANGES TO FILE
+                // We re-add the accounts to the DataStore to trigger the 'saveData()' method.
+                dataStore.addAccount(from);
+                dataStore.addAccount(to);
+                
+            } else {
+                throw new IllegalStateException("Transfer failed: Insufficient funds");
+            }
         }
-
-        Account from = dataStore.getAccount(fromAccId);
-        Account to = dataStore.getAccount(toAccId);
-
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("One or both accounts not found");
-        }
-
-        // Integration Logic: Check source
-        if (from.canWithdraw(amount)) {
-            // Step 1: Deduct from source
-            from.withdraw(amount);
-            from.addTransaction(new Transaction("TRF-OUT-" + System.currentTimeMillis(), fromAccId, "TRANSFER_OUT", amount, "To " + toAccId));
-
-            // Step 2: Add to destination
-            // Mutation Target: A mutant might delete this line, causing money to vanish
-            to.deposit(amount);
-            to.addTransaction(new Transaction("TRF-IN-" + System.currentTimeMillis(), toAccId, "TRANSFER_IN", amount, "From " + fromAccId));
-        } else {
-            throw new IllegalStateException("Transfer failed: Insufficient funds");
-        }
-    }
 }

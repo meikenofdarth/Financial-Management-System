@@ -6,8 +6,8 @@ com/fincore/model/Loan.class
 com/fincore/model/Customer.class
 com/fincore/model/Account.class
 com/fincore/service/LoanService.class
-com/fincore/model/Transaction.class
 com/fincore/util/FinancialMath.class
+com/fincore/model/Transaction.class
+com/fincore/util/ValidationUtil.class
 com/fincore/model/SavingsAccount.class
 com/fincore/model/CurrentAccount.class
-com/fincore/util/ValidationUtil.class
