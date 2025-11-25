@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class CoverageBoosterTest {
 
     @Test
-    void hitAllModelMethods() {
-        // 1. Transaction
+    void testAllModelMethods() {
+        //Transaction
         Transaction t = new Transaction("T1", "A1", "DEP", 100.0, "Desc");
         assertEquals("T1", t.getTransactionId());
         assertEquals("A1", t.getAccountId());
@@ -26,8 +26,8 @@ class CoverageBoosterTest {
         assertNotNull(t.getTimestamp());
         assertNotNull(t.toString()); 
 
-        // 2. Customer
-        Customer c = new Customer("C1", "John", "D", "j@d.com", "pass", 700, 50000);
+        //Customer
+        Customer c = new Customer("C1", "John", "Doe", "j@d.com", "pass", 700, 50000);
         c.setPhoneNumber("123");
         c.setEmail("new@d.com");
         c.setCreditScore(800);
@@ -41,7 +41,7 @@ class CoverageBoosterTest {
         assertEquals(800, c.getCreditScore());
         assertNotNull(c.toString());
 
-        // 3. Savings Account
+        //Savings Account
         SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
         sa.applyEndOfMonthBenefits(); 
         sa.closeAccount(); 
@@ -49,14 +49,14 @@ class CoverageBoosterTest {
         assertEquals(0.04, sa.getInterestRate());
         assertNotNull(sa.toString());
 
-        // 4. Current Account
+        //Current Account
         CurrentAccount ca = new CurrentAccount("CA1", "C1", -50.0, 500.0);
         ca.applyEndOfMonthBenefits(); 
         ca.setOverdraftLimit(600.0);
         assertEquals(600.0, ca.getOverdraftLimit());
         assertNotNull(ca.toString());
         
-        // 5. Loan
+        //Loan
         Loan l = new Loan("L1", "C1", 1000, 5.0, 12);
         l.makeRepayment(500);
         assertEquals(500, l.getTotalAmountPaid());
@@ -68,20 +68,20 @@ class CoverageBoosterTest {
     }
 
     @Test
-    void hitAllUtilsEdgeCases() {
-        // ValidationUtil - Hit Nulls
+    void testAllUtilsEdgeCases() {
+        // ValidationUtil
         assertFalse(ValidationUtil.isValidEmail(null));
         assertFalse(ValidationUtil.isValidPhoneNumber(null));
         assertFalse(ValidationUtil.isStrongPassword(null));
         assertTrue(ValidationUtil.isNullOrEmpty(null));
         assertTrue(ValidationUtil.isNullOrEmpty(""));
         
-        // DateUtil - Hit Nulls
+        // DateUtil
         assertThrows(IllegalArgumentException.class, () -> DateUtil.getDaysBetween(null, null));
         assertFalse(DateUtil.isDateInFuture(null));
         assertNull(DateUtil.addMonths(null, 1));
         
-        // FinancialMath - Hit Errors
+        // FinancialMath
         assertThrows(IllegalArgumentException.class, () -> FinancialMath.calculateCompoundInterest(-100, 5, 1, 1));
         assertThrows(IllegalArgumentException.class, () -> FinancialMath.calculateCompoundInterest(100, 5, 0, 1));
         assertThrows(IllegalArgumentException.class, () -> FinancialMath.calculateFutureValue(-100, 5, 12));
@@ -90,17 +90,17 @@ class CoverageBoosterTest {
     }
 
     @Test
-    void hitDataStoreAndServiceFlows() {
+    void testDataStoreAndServiceFlows() {
         DataStore ds = DataStore.getInstance();
         ds.clearAll();
 
-        // 1. Hit DataStore lookups that return null
+        // Test DataStore lookups that return null
         assertNull(ds.getCustomer("GHOST"));
         assertNull(ds.getAccount("GHOST"));
         assertNull(ds.getLoan("GHOST"));
         assertNull(ds.getCustomerByEmail("ghost@email.com"));
         
-        // 2. Hit Service Edge Cases
+        // Test service edge cases
         AccountService as = new AccountService();
         as.registerCustomer("C1", "A", "B", "valid@email.co", "Pass@123", 700, 50000);
         
@@ -113,7 +113,7 @@ class CoverageBoosterTest {
         // Transfer to self
         assertThrows(IllegalArgumentException.class, () -> as.transfer("A1", "A1", 100));
         
-        // 3. Hit Loan Service
+        // Test loan service
         LoanService ls = new LoanService();
         assertThrows(IllegalArgumentException.class, () -> ls.applyForLoan("L1", "GHOST", 1000, 12));
     }

@@ -1,12 +1,12 @@
 <configuration>
-    <!-- 1. Console Appender (So you can still see logs in terminal) -->
+    <!-- To see logs in terminal -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- 2. File Appender (The Critical Part for your Test) -->
+    <!-- File Appender -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>target/security-events.log</file>
         <append>true</append>
@@ -15,12 +15,12 @@
         </encoder>
     </appender>
 
-    <!-- 3. Root Logger -->
+    <!-- Root logger -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
 
-    <!-- 4. Specific Logger for your Controller -->
+    <!-- Specific logger for controller -->
     <logger name="com.fincore.controller" level="WARN" />
 </configuration>
