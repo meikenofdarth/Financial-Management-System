@@ -183,14 +183,17 @@ The mutation report will be available at `target/pit-reports/index.html`.
 
 ## 9. Individual Contributions
 
-- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented the Service Layer logic (`AccountService`, `LoanService`) and the Web Controller. Implemented the "Coverage Saturation" strategy (`ModelTest`) and Unit Tests for Utilities.
-- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Designed the Model architecture and `DataStore` persistence. Designed the Integration Tests (`DataStoreTest`) to handle persistence mutants and configured the PITest strategy.
-
+- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented testing for files under folders - Model, Repository , LoanServiceTest.java, ClientSideBypassTest.java and CoverageBoosterTest.java.
+- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Implemented testing for files under folders - Util, AccountServiceTest.java and SecurityLogTest.java.
+ 
 All other work including documentation was done equally by both the team members.
 
-## 11. Future Scope
 
-While the current project achieves high logical coverage, future work could include:
+## 10. Repository
+The code for our project can be found at - https://github.com/meikenofdarth/Financial-Management-System
+### AI Use Declaration
+We used AI at the start to plan the overall layout at the preliminary stages of this project. \
 
-1.  **Fuzz Testing:** Integrating Jqwik to automate random input generation for the Web Controller.
-2.  **Performance Testing:** Using JMeter to stress-test the file locking mechanism in `DataStore`.
+We have used AI to generate the boilerplate code and have also used when we felt it was necessary to flesh out some functionalities in the code and check syntax. \
+
+We have done all of the testing by hand. We manually tested each module and functionality by executing various input scenarios, validating outputs, and verifying that the system behaved according to the expected requirements. This included functional testing, and boundary case analysis. 
