@@ -192,8 +192,8 @@ All other work including documentation was done equally by both the team members
 ## 10. Repository
 The code for our project can be found at - https://github.com/meikenofdarth/Financial-Management-System
 ### AI Use Declaration
-We used AI at the start to plan the overall layout at the preliminary stages of this project. \
+We used AI at the start to plan the overall layout at the preliminary stages of this project. 
 
-We have used AI to generate the boilerplate code and have also used when we felt it was necessary to flesh out some functionalities in the code and check syntax. \
+We have used AI to generate the boilerplate code and have also used when we felt it was necessary to flesh out some functionalities in the code and check syntax. 
 
 We have done all of the testing by hand. We manually tested each module and functionality by executing various input scenarios, validating outputs, and verifying that the system behaved according to the expected requirements. This included functional testing and boundary case analysis. 
