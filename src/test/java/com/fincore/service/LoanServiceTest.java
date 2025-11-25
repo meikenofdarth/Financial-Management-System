@@ -1,6 +1,5 @@
 package com.fincore.service;
 
-import com.fincore.model.Customer;
 import com.fincore.model.Loan;
 import com.fincore.repository.DataStore;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LoanServiceTest {
-
+    // Tests to verify loan logic
     private LoanService loanService;
     private AccountService accountService;
     private DataStore dataStore;
@@ -23,165 +22,125 @@ class LoanServiceTest {
     }
     
     @Test
-    void testApplyForLoan_Success_PrimeRate() {
-        // Score 750+ gets 6.5% interest
-        accountService.registerCustomer("C1", "Jane", "Doe", "jane@test.com", "Pass@123", 800, 100000);
-        
+    void testApplyForLoanHighCreditScore() {
+        // Score >= 750
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 800, 100000); 
         Loan loan = loanService.applyForLoan("L1", "C1", 50000, 12);
         
         assertNotNull(loan);
-        assertEquals(6.5, loan.getInterestRate(), "Prime customers should get 6.5% rate");
+        assertEquals(6.5, loan.getInterestRate(), ">=750 credit score should get 6.5% rate");
     }
 
     @Test
-    void testApplyForLoan_Success_MidRate() {
-        // Score 700-749 gets 7.5% interest
-        accountService.registerCustomer("C2", "Mid", "User", "mid@test.com", "Pass@123", 720, 100000);
+    void testApplyForLoanMidCreditScore() {
+        // Score 700-749 
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 720, 100000);
         
-        Loan loan = loanService.applyForLoan("L2", "C2", 50000, 12);
-        
-        assertEquals(7.5, loan.getInterestRate(), "Mid-tier customers should get 7.5% rate");
+        Loan loan = loanService.applyForLoan("L1", "C1", 50000, 12);
+        assertNotNull(loan);
+        assertEquals(7.5, loan.getInterestRate(), "700-749 credit score should get 7.5% rate");
     }
 
     @Test
-    void testApplyForLoan_Success_LowRate() {
-        // Score 600-699 gets 9.0% interest
-        accountService.registerCustomer("C3", "Low", "User", "low@test.com", "Pass@123", 650, 100000);
+    void testApplyForLoanLowCreditScore() {
+        // Score 600-699
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 620, 100000);
         
-        Loan loan = loanService.applyForLoan("L3", "C3", 50000, 12);
-        
-        assertEquals(9.0, loan.getInterestRate(), "Low-tier customers should get 9.0% rate");
+        Loan loan = loanService.applyForLoan("L1", "C1", 50000, 12);
+        assertNotNull(loan);
+        assertEquals(9.0, loan.getInterestRate(), "600-699 credit score should get 9.0% rate");
     }
 
     @Test
-    void testApplyForLoan_Rejected_LowScore() {
-        // Score < 600 rejected
-        accountService.registerCustomer("C4", "Fail", "User", "fail@test.com", "Pass@123", 500, 100000);
-        
+    void testApplyForLoanRejectedLowCreditScore() {
+        // Credit Score < 600 loan rejected
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 520, 100000);
         assertThrows(IllegalStateException.class, () -> 
-            loanService.applyForLoan("L4", "C4", 10000, 12)
+            loanService.applyForLoan("L1", "C1", 10000, 12)
         );
     }
 
     @Test
-    void testApplyForLoan_Rejected_HighAmount() {
-        // Income 1000 * 5 = 5000 Max. Requesting 6000.
-        accountService.registerCustomer("C5", "Greedy", "User", "greedy@test.com", "Pass@123", 750, 1000);
+    void testApplyForLoanRejectedHighAmount() {
+        //Loan amount > 5*income rejected
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 820, 1000);
         
         assertThrows(IllegalStateException.class, () -> 
-            loanService.applyForLoan("L5", "C5", 6000, 12)
+            loanService.applyForLoan("L1", "C1", 6000, 12)
         );
     }
     
     @Test
-    void testApplyForLoan_ExactBoundary_MaxIncome() {
-        // Income = 20,000. Max Loan (x5) = 100,000.
-        accountService.registerCustomer("C99", "Edge", "Case", "edge@test.com", "Pass@123", 800, 20000);
-        
-        // 1. Try exactly 100,000 (Should Pass)
-        // This kills the mutant that changes "amount > max" to "amount >= max"
-        Loan loan = loanService.applyForLoan("L99", "C99", 100000, 12);
+    void testApplyForLoaExactBoundary() {
+        //Loan amount = 5*income accepted
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 820, 20000);
+        Loan loan = loanService.applyForLoan("L1", "C1", 100000, 12);
         assertNotNull(loan);
-        
-        // 2. Try 100,001 (Should Fail)
         assertThrows(IllegalStateException.class, () -> 
-            loanService.applyForLoan("L100", "C99", 100000.01, 12)
+            loanService.applyForLoan("L2", "C1", 100000.01, 12)
         );
     }
+
     @Test
-void testLoanClosureBehavior() {
-    // Register valid customer
-    accountService.registerCustomer(
-        "C10", "John", "Doe", "john@test.com",
-        "Pass@123", 750, 50000
-    );
-
-    // Apply for loan
-    Loan loan = loanService.applyForLoan("L10", "C10", 1000, 12);
-
-    // At start: loan should NOT be closed
-    assertFalse(loan.isClosed(), "Loan should start as active");
-
-    // Repay full amount to close the loan
-    loan.makeRepayment(1000);
-
-    // After paying: loan must be marked closed
-    assertTrue(loan.isClosed(), "Loan should be closed after full repayment");
-}
-@Test
-    void testApplyForLoan_Boundary_Score750() {
-        // Logic: if (score >= 750) -> 6.5%. 
-        // Mutant: if (score > 750).
-        // If score is 750: Original=True (6.5). Mutant=False (Fall through to 7.5).
-        accountService.registerCustomer("C_Prime", "Test", "User", "p@t.com", "Pass@123", 750, 50000);
-        
-        Loan loan = loanService.applyForLoan("L_Prime", "C_Prime", 10000, 12);
-        
-        assertEquals(6.5, loan.getInterestRate(), "Score 750 exactly should still get 6.5%");
+    void testLoanClosureBehavior() {
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 720, 1000);
+        Loan loan = loanService.applyForLoan("L1", "C1", 1000, 12);
+        assertFalse(loan.isClosed());
+        loan.makeRepayment(1000);
+        assertTrue(loan.isClosed());
+    }
+    @Test
+    void testApplyForLoanBoundaryCreditScore750() {
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 750, 10000);
+        Loan loan = loanService.applyForLoan("L1", "C1", 10000, 12);
+        assertEquals(6.5, loan.getInterestRate());
     }
 
     @Test
-    void testApplyForLoan_Boundary_Score700() {
-        // Logic: else if (score >= 700) -> 7.5%.
-        // Mutant: else if (score > 700).
-        // If score is 700: Original=True (7.5). Mutant=False (Fall through to 9.0).
-        accountService.registerCustomer("C_Mid", "Test", "User", "m@t.com", "Pass@123", 700, 50000);
-        
-        Loan loan = loanService.applyForLoan("L_Mid", "C_Mid", 10000, 12);
-        
-        assertEquals(7.5, loan.getInterestRate(), "Score 700 exactly should get 7.5%");
+    void testApplyForLoanBoundaryCreditScore700() {
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 700, 10000);   
+        Loan loan = loanService.applyForLoan("L1", "C1", 10000, 12);
+        assertEquals(7.5, loan.getInterestRate());
     }
     @Test
-    void testApplyForLoan_Boundary_Score600() {
-        // Logic: if (score < 600) throw.
-        // Mutant: if (score <= 600) throw.
-        // If score is 600: Original=False (Safe). Mutant=True (Throws Exception).
-        accountService.registerCustomer("C_Low", "Test", "User", "l@t.com", "Pass@123", 600, 50000);
-        
-        Loan loan = loanService.applyForLoan("L_Low", "C_Low", 10000, 12);
-        
+    void testApplyForLoanBoundaryCreditScore600() {
+        accountService.registerCustomer("C1", "Anurag", "R", "a@r.com", "Pass@123", 600, 10000);  
+        Loan loan = loanService.applyForLoan("L1", "C1", 10000, 12);
         assertNotNull(loan);
         assertEquals(9.0, loan.getInterestRate());
     }
     @Test
-    void testApplyForLoan_SideEffect_DataStoreUpdate() {
-        accountService.registerCustomer("C_Store", "Test", "User", "s@t.com", "Pass@123", 750, 50000);
-        
-        loanService.applyForLoan("L_Store", "C_Store", 10000, 12);
-        
-        // Kill VoidMethodCallMutator on dataStore.addLoan(loan)
-        Loan storedLoan = dataStore.getLoan("L_Store");
-        assertNotNull(storedLoan, "Loan must be persisted in DataStore");
+    void testApplyForLoanDataStoreUpdate() {
+        accountService.registerCustomer("C1", "Abcd", "Abcd", "ab@cd.com", "Pass@123", 750, 50000);
+        loanService.applyForLoan("L1", "C1", 10000, 12);
+        Loan storedLoan = dataStore.getLoan("L1");
+        assertNotNull(storedLoan);
     }
+
     @Test
-    void testApplyForLoan_InvalidCustomer() {
-        // Kill NullReturn or Conditional Negation on (customer == null)
+    void testApplyForLoanInvalidCustomer() {
         assertThrows(IllegalArgumentException.class, () -> 
-            loanService.applyForLoan("L_X", "NON_EXISTENT_ID", 1000, 12)
+            loanService.applyForLoan("L1", "INVALID_ID", 1000, 12)
         );
     }
 
     @Test
-    void testPayLoanInstallment_InvalidLoanId() {
-        // Kill (loan == null) check removal
+    void testPayLoanInstallmentInvalidLoanId() {
         assertThrows(IllegalArgumentException.class, () -> 
             loanService.payLoanInstallment("INVALID_ID", 100)
         );
     }
-
+    
     @Test
-    void testPayLoanInstallment_AlreadyClosed() {
-        accountService.registerCustomer("C_Closed", "C", "User", "c@t.com", "Pass@123", 750, 50000);
-        loanService.applyForLoan("L_Closed", "C_Closed", 1000, 12);
+    void testPayLoanInstallmentAlreadyClosed() {
+        accountService.registerCustomer("C67", "C", "67", "c@abcd.com", "Pass@123", 750, 50000);
+        loanService.applyForLoan("L67", "C67", 1000, 12);
         
-        // Close it manually
-        Loan loan = dataStore.getLoan("L_Closed");
-        loan.makeRepayment(2000); // Overpay to close
+        Loan loan = dataStore.getLoan("L67");
+        loan.makeRepayment(2000); //loan repaid
         assertTrue(loan.isClosed());
-        
-        // Kill NegateConditionalsMutator on if(loan.isClosed())
         assertThrows(IllegalStateException.class, () -> 
-            loanService.payLoanInstallment("L_Closed", 100)
+            loanService.payLoanInstallment("L67", 100)
         );
     }
 }

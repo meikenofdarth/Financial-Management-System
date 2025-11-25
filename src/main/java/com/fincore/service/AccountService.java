@@ -3,7 +3,9 @@ package com.fincore.service;
 import com.fincore.model.*;
 import com.fincore.repository.DataStore;
 import com.fincore.util.ValidationUtil;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AccountService {
     private DataStore dataStore;
 

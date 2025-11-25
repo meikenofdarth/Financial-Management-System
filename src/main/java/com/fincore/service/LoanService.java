@@ -4,7 +4,9 @@ import com.fincore.model.Customer;
 import com.fincore.model.Loan;
 import com.fincore.repository.DataStore;
 import com.fincore.util.FinancialMath;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoanService {
     private DataStore dataStore;
 

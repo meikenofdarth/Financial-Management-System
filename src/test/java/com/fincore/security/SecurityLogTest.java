@@ -1,6 +1,5 @@
 package com.fincore.security;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,44 +17,28 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 class SecurityLogTest {
-
+    // Test to verify that security events are logged correctly
     @Autowired
     private MockMvc mockMvc;
 
-    @AfterEach
-    void cleanup() {
-        // Optional: Clean up but keep it for debugging if needed
-        // File logFile = new File("target/security-events.log");
-        // if(logFile.exists()) logFile.delete();
-    }
-
     @Test
     void testSecurityEventLogging() throws Exception {
-        // 1. Perform a Malicious Attack (Negative Amount)
         mockMvc.perform(post("/transaction")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("accountId", "ACC-TEST")
                 .param("type", "DEPOSIT")
-                .param("amount", "-50000")); // Attack
+                .param("amount", "-50000"));
 
-        // 2. Read the Log File
-        // The logback-test.xml ensures this file is created
         File logFile = new File("target/security-events.log");
-        
-        // Wait briefly for IO flush
         int attempts = 0;
-        while (!logFile.exists() && attempts < 10) {
+        while (!logFile.exists() && attempts < 10) {//wait for log to be written
             Thread.sleep(100);
             attempts++;
         }
-
-        assertTrue(logFile.exists(), "Log file should be created by logback-test.xml");
-
+        assertTrue(logFile.exists(), "Log file should be created");
         String content = new String(Files.readAllBytes(Paths.get(logFile.toURI())));
-
-        // 3. Verify the System "Noticed" the attack
-        assertTrue(content.contains("SECURITY ALERT"), "Log should detect the alert tag");
-        assertTrue(content.contains("Suspicious Transaction"), "Log should identify the transaction type");
-        assertTrue(content.contains("-50000"), "Log should record the malicious payload");
+        assertTrue(content.contains("SECURITY ALERT"));
+        assertTrue(content.contains("Suspicious Transaction"));
+        assertTrue(content.contains("-50000"));
     }
 }

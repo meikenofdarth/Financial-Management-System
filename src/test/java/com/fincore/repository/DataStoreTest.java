@@ -20,16 +20,12 @@ class DataStoreTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // 1. Delete file to start clean
+        //delete files
         File file = new File(FILE_PATH);
         if (file.exists()) {
             file.delete();
         }
-        
-        // 2. Reset Singleton using Reflection (Crucial for mutation testing)
         resetSingleton();
-        
-        // 3. Initialize fresh
         DataStore.getInstance().clearAll();
     }
 
@@ -42,7 +38,6 @@ class DataStoreTest {
         resetSingleton();
     }
 
-    // HELPER: Forces the Singleton 'instance' to null so next call triggers loadData()
     private void resetSingleton() throws Exception {
         Field instance = DataStore.class.getDeclaredField("instance");
         instance.setAccessible(true);
@@ -50,73 +45,59 @@ class DataStoreTest {
     }
 
     @Test
-    void testAddCustomer_PersistsToDisk() throws Exception {
-        // 1. Add Data
-        Customer c = new Customer("C1", "Save", "Me", "save@me.com", "pass", 700, 500);
+    void testAddCustomerStored() throws Exception {
+        Customer c = new Customer("C1", "Sanchit", "Kumar", "abcd@e.com", "Pass@123", 700, 500);
         DataStore.getInstance().addCustomer(c);
-        
-        // 2. WIPE MEMORY (Reset Singleton)
         resetSingleton(); 
-        
-        // 3. Reload from Disk (Calls loadData)
+
         DataStore newDataStore = DataStore.getInstance();
-        
-        // 4. Verify (If saveData() was deleted by mutant, this fails)
-        Customer ret = newDataStore.getCustomer("C1");
-        assertNotNull(ret, "Customer should persist after reload");
-        assertEquals("save@me.com", ret.getEmail());
+        Customer cu = newDataStore.getCustomer("C1");
+        assertNotNull(cu);
+        assertEquals("abcd@e.com", cu.getEmail());
     }
 
     @Test
-    void testAddAccount_PersistsToDisk() throws Exception {
+    void testAddAccountStored() throws Exception {
         Account a = new SavingsAccount("A1", "C1", 1000);
         DataStore.getInstance().addAccount(a);
-        
-        // WIPE MEMORY
         resetSingleton();
         
-        // Reload
-        Account ret = DataStore.getInstance().getAccount("A1");
-        assertNotNull(ret, "Account should persist after reload");
-        assertEquals(1000.0, ret.getBalance());
+        Account ac = DataStore.getInstance().getAccount("A1");
+        assertNotNull(ac);
+        assertEquals(1000.0, ac.getBalance());
     }
 
     @Test
-    void testAddLoan_PersistsToDisk() throws Exception {
+    void testAddLoanStored() throws Exception {
         Loan l = new Loan("L1", "C1", 5000, 5.0, 12);
         DataStore.getInstance().addLoan(l);
-        
-        // WIPE MEMORY
         resetSingleton();
         
-        // Reload
-        Loan ret = DataStore.getInstance().getLoan("L1");
-        assertNotNull(ret, "Loan should persist after reload");
-        assertEquals(5000.0, ret.getPrincipalAmount());
+        Loan l2 = DataStore.getInstance().getLoan("L1");
+        assertNotNull(l2);
+        assertEquals(5000.0, l2.getPrincipalAmount());
     }
 
     @Test
     void testGetCustomerByEmail() {
-        Customer c1 = new Customer("C1", "A", "B", "find@me.com", "pass", 700, 500);
+        Customer c1 = new Customer("C1", "A", "B", "abcd@e.com", "Pass@123", 700, 500);
         DataStore.getInstance().addCustomer(c1);
 
-        Customer found = DataStore.getInstance().getCustomerByEmail("find@me.com");
-        assertNotNull(found);
-        assertEquals("C1", found.getCustomerId());
+        Customer c2 = DataStore.getInstance().getCustomerByEmail("abcd@e.com");
+        assertNotNull(c2);
+        assertEquals("C1", c2.getCustomerId());
 
-        Customer notFound = DataStore.getInstance().getCustomerByEmail("ghost@me.com");
-        assertNull(notFound);
+        Customer c3 = DataStore.getInstance().getCustomerByEmail("abcdefg@e.com");
+        assertNull(c3);
     }
 
     @Test
     void testGetAccountsForCustomer() {
         Account a1 = new SavingsAccount("A1", "C1", 100);
         Account a2 = new SavingsAccount("A2", "C1", 200);
-        
         DataStore ds = DataStore.getInstance();
         ds.addAccount(a1);
         ds.addAccount(a2);
-
         List<Account> result = ds.getAccountsForCustomer("C1");
         assertEquals(2, result.size());
     }
@@ -125,20 +106,17 @@ class DataStoreTest {
     void testGetLoansForCustomer() {
         Loan l1 = new Loan("L1", "C1", 1000, 5, 12);
         DataStore.getInstance().addLoan(l1);
-
         List<Loan> result = DataStore.getInstance().getLoansForCustomer("C1");
         assertEquals(1, result.size());
     }
     
     @Test
-    void testLoadData_HandlesMissingFile() throws Exception {
-        // Ensure no file exists
+    void testLoadDataHandlesMissingFile() throws Exception {
+        //If no bank_data.ser file exists
         File f = new File(FILE_PATH);
         if(f.exists()) f.delete();
-        
         resetSingleton();
         
-        // Should not crash, just return empty store
         DataStore ds = DataStore.getInstance();
         assertNotNull(ds);
         assertTrue(ds.getAllCustomers().isEmpty());
@@ -147,8 +125,8 @@ class DataStoreTest {
     @Test
     void testGetAllCustomers() {
         DataStore ds = DataStore.getInstance();
-        ds.addCustomer(new Customer("C1", "A", "B", "e1", "p", 1, 1));
-        ds.addCustomer(new Customer("C2", "X", "Y", "e2", "p", 1, 1));
+        ds.addCustomer(new Customer("C1", "A", "A", "a@gmail.com", "Pass@123", 1, 1));
+        ds.addCustomer(new Customer("C2", "B", "B", "b@gmail.com", "Pass@123", 1, 1));
         
         assertEquals(2, ds.getAllCustomers().size());
     }

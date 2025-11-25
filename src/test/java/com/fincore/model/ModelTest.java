@@ -6,67 +6,65 @@ import static org.junit.jupiter.api.Assertions.*;
 class ModelTest {
 
     @Test
-    void testCustomerFullCoverage() {
-        Customer c = new Customer("C1", "John", "Doe", "j@d.com", "pass", 700, 50000);
+    void testCustomer() {
+        Customer c = new Customer("C1", "Anurag", "Ramaswamy", "abcd@gmail.com", "Abcdefg#$", 700, 50000);
         
-        // Exercise every getter
+        //Test Getters
         assertEquals("C1", c.getCustomerId());
-        assertEquals("John", c.getFirstName());
-        assertEquals("Doe", c.getLastName());
-        assertEquals("John Doe", c.getFullName());
-        assertEquals("j@d.com", c.getEmail());
-        assertTrue(c.verifyPassword("pass"));
+        assertEquals("Anurag", c.getFirstName());
+        assertEquals("Ramaswamy", c.getLastName());
+        assertEquals("Anurag Ramaswamy", c.getFullName());
+        assertEquals("abcd@gmail.com", c.getEmail());
+        assertTrue(c.verifyPassword("Abcdefg#$"));
         assertEquals(700, c.getCreditScore());
         assertEquals(50000, c.getYearlyIncome());
         
-        // Exercise Setters
-        c.setEmail("new@test.com");
-        c.setPhoneNumber("555-0000");
+        //Test Setters
+        c.setEmail("abcdef@gmail.com");
+        c.setPhoneNumber("1234567890");
         c.setCreditScore(800);
-        
-        // Validating Setters worked
-        assertEquals("new@test.com", c.getEmail());
-        assertEquals("555-0000", c.getPhoneNumber());
+        assertEquals("abcdef@gmail.com", c.getEmail());
+        assertEquals("1234567890", c.getPhoneNumber());
         assertEquals(800, c.getCreditScore());
         
-        // CRITICAL: Call toString() to kill String Mutants
+        //Null check
         String str = c.toString();
         assertNotNull(str);
         assertTrue(str.contains("C1"));
     }
 
     @Test
-    void testAccountFullCoverage() {
+    void testAccount() {
         // Savings
-        SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
-        assertEquals("S1", sa.getAccountId());
+        SavingsAccount sa = new SavingsAccount("1", "C1", 1000.0);
+        
+        //Test Getters
+        assertEquals("1", sa.getAccountId());
         assertEquals("C1", sa.getCustomerId());
         assertTrue(sa.isActive());
         assertEquals("SAVINGS", sa.getAccountType());
         assertEquals(0.04, sa.getInterestRate());
         
-        // Helper methods
         sa.closeAccount();
         assertFalse(sa.isActive());
         
-        // toString
-        String saStr = sa.toString();
-        assertTrue(saStr.contains("S1"));
-        assertTrue(saStr.contains("Closed"));
+        //toString
+        String s = sa.toString();
+        assertTrue(s.contains("1"));
+        assertTrue(s.contains("Closed"));
 
         // Current
-        CurrentAccount ca = new CurrentAccount("CU1", "C1", 0.0, 500.0);
+        CurrentAccount ca = new CurrentAccount("2", "C1", 0.0, 500.0);
+
         assertEquals("CURRENT", ca.getAccountType());
         ca.setOverdraftLimit(600.0);
         assertEquals(600.0, ca.getOverdraftLimit());
-        
-        // toString
-        String caStr = ca.toString();
-        assertTrue(caStr.contains("CU1"));
+        String str = ca.toString();
+        assertTrue(str.contains("2"));
     }
 
     @Test
-    void testLoanFullCoverage() {
+    void testLoan() {
         Loan l = new Loan("L1", "C1", 1000.0, 5.0, 12);
         
         assertEquals("L1", l.getLoanId());
@@ -75,15 +73,13 @@ class ModelTest {
         assertEquals(5.0, l.getInterestRate());
         assertEquals(12, l.getTenureInMonths());
         assertEquals(0.0, l.getTotalAmountPaid());
-        
-        // toString
-        String lStr = l.toString();
-        assertTrue(lStr.contains("L1"));
-        assertTrue(lStr.contains("ACTIVE"));
+        String s = l.toString();
+        assertTrue(s.contains("L1"));
+        assertTrue(s.contains("ACTIVE"));
     }
 
     @Test
-    void testTransactionFullCoverage() {
+    void testTransaction() {
         Transaction t = new Transaction("T1", "A1", "DEP", 100.0, "Desc");
         
         assertEquals("T1", t.getTransactionId());
@@ -93,169 +89,108 @@ class ModelTest {
         assertEquals("Desc", t.getDescription());
         assertNotNull(t.getTimestamp());
         
-        String tStr = t.toString();
-        assertTrue(tStr.contains("T1"));
-        assertTrue(tStr.contains("Desc"));
+        String str = t.toString();
+        assertTrue(str.contains("T1"));
+        assertTrue(str.contains("Desc"));
     }
 
-// ... existing tests ...
-
+    //SavingsAccount Tests
     @Test
-    void testSavingsAccount_WithdrawBoundaries() {
-        // Min Balance is 500.00
+    void testSavingsAccountWithdrawBoundaries() {
+        //Min balance = 500
         SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
-
-        // 1. Test Safe Withdrawal
         assertTrue(sa.canWithdraw(400.0));
-
-        // 2. Test EXACT Boundary (Killing ConditionalsBoundaryMutator)
-        // 1000 - 500 = 500. Logic is >= 500.
-        // Mutant changes >= to >. This assertion kills it.
-        assertTrue(sa.canWithdraw(500.0), "Should allow withdrawing down to exactly min balance");
-
-        // 3. Test Just Over Boundary
-        // 1000 - 500.01 = 499.99. Should fail.
-        assertFalse(sa.canWithdraw(500.01), "Should not allow withdrawing below min balance");
+        assertTrue(sa.canWithdraw(500.0));
+        assertFalse(sa.canWithdraw(500.01));
     }
 
     @Test
-    void testSavingsAccount_InactiveWithdraw() {
+    void testSavingsAccountInactiveWithdraw() {
         SavingsAccount sa = new SavingsAccount("S1", "C1", 1000.0);
         sa.closeAccount();
-
-        // Killing NegateConditionalsMutator on "this.isActive"
-        // Even with enough balance, a closed account cannot withdraw
         assertFalse(sa.canWithdraw(100.0));
     }
 
     @Test
-    void testSavingsAccount_InterestCalculation() {
-        // Setup: 1200 Balance. Rate is 0.04 (4%).
-        // Math: 1200 * (0.04 / 12) = 4.00 interest.
+    void testSavingsAccountInterestCalculation() {
         SavingsAccount sa = new SavingsAccount("S1", "C1", 1200.0);
-        int initialHistory = sa.getTransactionHistory().size();
-
+        int x = sa.getTransactionHistory().size();
         sa.applyEndOfMonthBenefits();
-
-        // Killing MathMutator: Verify exact calculation
-        assertEquals(1204.00, sa.getBalance(), 0.001, "Interest calculation must be precise");
-
-        // Killing VoidMethodCallMutator: Verify transaction was added
-        assertEquals(initialHistory + 1, sa.getTransactionHistory().size(), "Interest application must record a transaction");
-        assertEquals("INTEREST", sa.getTransactionHistory().get(initialHistory).getType());
+        assertEquals(1204.00, sa.getBalance(), 0.001);
+        assertEquals(x + 1, sa.getTransactionHistory().size());
+        assertEquals("INTEREST", sa.getTransactionHistory().get(x).getType());
     }
 
     @Test
-    void testSavingsAccount_InterestEdgeCases() {
-        // 1. Inactive Account (Killing NegateConditionalsMutator on !isActive)
+    void testSavingsAccountInterestEdgeCases() {
         SavingsAccount saClosed = new SavingsAccount("S2", "C1", 1200.0);
         saClosed.closeAccount();
         saClosed.applyEndOfMonthBenefits();
-        assertEquals(1200.0, saClosed.getBalance(), "Closed account should not get interest");
+        assertEquals(1200.0, saClosed.getBalance());
 
-        // 2. Zero Balance (Killing ConditionalsBoundaryMutator on balance > 0)
         SavingsAccount saZero = new SavingsAccount("S3", "C1", 0.0);
         saZero.applyEndOfMonthBenefits();
         assertEquals(0.0, saZero.getBalance());
         
-        // 3. Negative Balance (Killing NegateConditionalsMutator)
-        // (Assuming we force a negative balance via constructor hack or logic bypass)
         SavingsAccount saNeg = new SavingsAccount("S4", "C1", -100.0);
         saNeg.applyEndOfMonthBenefits();
-        assertEquals(-100.0, saNeg.getBalance(), "Negative balance should not get interest");
+        assertEquals(-100.0, saNeg.getBalance());
     }
+
+    //CurrentAccount Tests
     @Test
-    void testCurrentAccount_WithdrawBoundaries() {
-        // Setup: Balance 1000.0, Overdraft Limit 500.0.
-        // Total Buying Power = 1500.0
+    void testCurrentAccountWithdrawBoundaries() {
+       
         CurrentAccount ca = new CurrentAccount("C1", "U1", 1000.0, 500.0);
 
-        // 1. Test Safe Withdrawal (Within Balance)
         assertTrue(ca.canWithdraw(900.0));
-
-        // 2. Test Withdrawal using Overdraft (Killing MathMutator on + vs -)
-        // Logic: Balance + Limit (1000 + 500 = 1500).
-        // Mutant: Balance - Limit (1000 - 500 = 500).
-        // If we withdraw 600, Original passes, Mutant fails.
-        assertTrue(ca.canWithdraw(600.0), "Should allow withdrawal using overdraft portion");
-
-        // 3. Test EXACT Boundary (Killing ConditionalsBoundaryMutator)
-        // Total Power: 1500. Logic is >= amount.
-        // Mutant changes >= to >. This assertion kills it.
-        assertTrue(ca.canWithdraw(1500.0), "Should allow withdrawing exactly (Balance + Overdraft)");
-
-        // 4. Test Just Over Boundary
-        // 1500.01 should fail.
-        assertFalse(ca.canWithdraw(1500.01), "Should not allow withdrawing beyond overdraft limit");
+        assertTrue(ca.canWithdraw(1001.0));
+        assertTrue(ca.canWithdraw(1500.0));
+        assertFalse(ca.canWithdraw(1500.01));
     }
 
     @Test
-    void testCurrentAccount_InactiveWithdraw() {
+    void testCurrentAccountInactiveWithdraw() {
         CurrentAccount ca = new CurrentAccount("C1", "U1", 1000.0, 500.0);
         ca.closeAccount();
-
-        // Killing NegateConditionalsMutator on "this.isActive"
-        // Even with huge overdraft limit, a closed account cannot withdraw
         assertFalse(ca.canWithdraw(100.0));
     }
 
     @Test
-    void testCurrentAccount_EndOfMonth_ApplyFee() {
-        // Setup: Negative Balance (-100). Logic: if (balance < 0).
+    void testCurrentAccountEndOfMonthApplyFee() {
         CurrentAccount ca = new CurrentAccount("C1", "U1", -100.0, 500.0);
-        int initialHistory = ca.getTransactionHistory().size();
-
+        int x = ca.getTransactionHistory().size();
         ca.applyEndOfMonthBenefits();
-
-        // 1. Verify Fee Calculation (Killing MathMutator)
-        // -100 - 25 = -125.
-        assertEquals(-125.0, ca.getBalance(), 0.001, "Fee of 25.00 should be subtracted from negative balance");
-
-        // 2. Verify Transaction (Killing VoidMethodCallMutator)
-        assertEquals(initialHistory + 1, ca.getTransactionHistory().size(), "Fee application must record a transaction");
-        Transaction t = ca.getTransactionHistory().get(initialHistory);
+        
+        assertEquals(-125.0, ca.getBalance(), 0.001);
+        assertEquals(x + 1, ca.getTransactionHistory().size());
+        Transaction t = ca.getTransactionHistory().get(x);
         assertEquals("FEE", t.getType());
         assertEquals(25.0, t.getAmount(), 0.001);
-    }
-
-    @Test
-    void testCurrentAccount_EndOfMonth_FeeBoundary() {
-        // 1. Positive Balance (No Fee)
         CurrentAccount caPos = new CurrentAccount("C2", "U1", 100.0, 500.0);
         caPos.applyEndOfMonthBenefits();
-        assertEquals(100.0, caPos.getBalance(), "Positive balance should not incur fee");
-
-        // 2. EXACT Zero Balance (Killing ConditionalsBoundaryMutator)
-        // Logic is: if (balance < 0).
-        // Mutant changes < to <=.
-        // If balance is 0.0: Original (False) -> No Fee. Mutant (True) -> Fee applied.
+        assertEquals(100.0, caPos.getBalance());
         CurrentAccount caZero = new CurrentAccount("C3", "U1", 0.0, 500.0);
         caZero.applyEndOfMonthBenefits();
-        assertEquals(0.0, caZero.getBalance(), "Zero balance should not incur overdraft fee");
+        assertEquals(0.0, caZero.getBalance());
     }
 
     @Test
-    void testCurrentAccount_SettersAndOverdraftLogic() {
-        CurrentAccount ca = new CurrentAccount("C4", "U1", 0.0, 0.0);
-        
-        // Verify Setter works (Killing VoidMethodCallMutator if setter is empty)
+    void testCurrentAccountSetOverdraftCheck() {
+        CurrentAccount ca = new CurrentAccount("C1", "U1", 0.0, 0.0);
         ca.setOverdraftLimit(200.0);
         assertEquals(200.0, ca.getOverdraftLimit(), 0.001);
-        
-        // Verify new limit is actually used in logic
         assertTrue(ca.canWithdraw(150.0));
         assertFalse(ca.canWithdraw(250.0));
     }
 
     @Test
-    void testCurrentAccount_ToString() {
-        // Good for coverage, ensures values are mapped correctly
-        CurrentAccount ca = new CurrentAccount("ACC-99", "CUST-1", 500.50, 200.00);
-        String result = ca.toString();
-        
-        assertTrue(result.contains("ACC-99"));
-        assertTrue(result.contains("500.50"));
-        assertTrue(result.contains("200.00"));
-        assertTrue(result.contains("Current Account"));
+    void testCurrentAccountToString() {
+        CurrentAccount ca = new CurrentAccount("C67", "CU67", 500, 200.00);
+        String str = ca.toString();
+        assertTrue(str.contains("C67"));
+        assertTrue(str.contains("500"));
+        assertTrue(str.contains("200.00"));
+        assertTrue(str.contains("Current Account"));
     }
 }
