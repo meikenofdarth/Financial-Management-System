@@ -99,7 +99,7 @@ This layer addresses the requirement for "Client-side web application testing (b
   - **Tooling:** **Spring MockMvc**.
   - **Methodology:** HTML5 forms prevent users from entering negative numbers or skipping required fields. However, malicious actors can bypass this using tools like cURL.
   - **Execution:** We constructed raw HTTP POST requests that deliberately violated business rules (e.g., `amount=-5000`, `password="123"`).
-  - **Success Criteria:** The test passes only if the Controller _rejects_ the input and returns a specific error message, proving that Server-Side Validation is active.
+  - **Success Criteria:** The test passes only if the Controller rejects the input and returns a specific error message, proving that Server-Side Validation is active.
 
 - **Audit Logging Verification:**
   - **Class:** `SecurityLogTest.java`
@@ -135,7 +135,7 @@ These operators modify how methods call other methods or handle flow.
 
 ## 7. Results and Analysis
 
-In the beginning we got a mutation score of only 21% due to majority of test not being written.
+In the beginning we got a mutation score of only 21% due to majority of tests not being written.
 ![alt text](images/21.png)
 We added more test cases to enhance coverage in the already existing files to 60%.
 ![alt text](images/60.png)
@@ -157,7 +157,7 @@ The final mutation analysis yielded the following results:
 
 ## 8. Steps To Run
 
-### Common Steps
+### For The Project
 
 ```bash
 # 1. Build the project
@@ -183,8 +183,8 @@ The mutation report will be available at `target/pit-reports/index.html`.
 
 ## 9. Individual Contributions
 
-- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented testing for files under folders - Model, Repository , LoanServiceTest.java, ClientSideBypassTest.java and CoverageBoosterTest.java.
-- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Implemented testing for files under folders - Util, AccountServiceTest.java and SecurityLogTest.java.
+- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented testing for files under folders - Model, Repository , LoanServiceTest.java and ClientSideBypassTest.java.
+- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Implemented testing for files under folders - Util, AccountServiceTest.java, SecurityLogTest.java and CoverageBoosterTest.java.
  
 All other work including documentation was done equally by both the team members.
 
