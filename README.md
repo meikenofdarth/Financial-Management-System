@@ -1,142 +1,196 @@
-# FinCore Banking System
+## 1. What is Mutation Testing?
 
-**Course:** CSE 731: Software Testing
-**Term:** Term I 2025 - '26
-**Institution:** IIIT Bangalore
+Mutation Testing is a fault-based software testing technique used to evaluate the quality of a test suite. It involves modifying a program in small ways (creating "mutants") to create specific logical errors.
 
-## Project Overview
+The objective is to write tests that fail when running against these mutants.
 
-FinCore is a robust, persistent Banking Web Application developed using Java and Spring Boot. It simulates core financial operations including customer registration, account management (Savings and Current), fund transfers, and algorithmic loan processing.
+- **Killed Mutant:** The test failed (The error was detected).
+- **Survived Mutant:** The test passed (The error went undetected).
 
-The primary engineering goal of this project was to establish a rigorous software testing environment. The project employs **Mutation Testing** (utilizing PITest) as the primary metric for quality assurance, while also incorporating **Security Bypass Testing** and **Audit Logging** to simulate real-world intrusion detection scenarios.
+The quality of the test suite is calculated by the formula:\
+**Mutation Score** = (Killed Mutants \* 100)/ (Total Mutants)
 
-## System Architecture
+## 2. Objective
 
-The application follows a modular **Model-View-Controller (MVC)** architecture layered with a Service-Repository pattern. This separation of concerns ensures testability and scalability.
+The primary objective of this project was to develop a test suite for the **FinCore Banking System**.
 
-### 1. Web Layer (Controller & DTOs)
-Located in `com.fincore.controller` and `com.fincore.dto`.
-*   **BankController.java:** The central request handler. It maps HTTP GET/POST requests to business logic. It handles user interface flow and implements **Security Auditing** by logging failed validation attempts and suspicious activities (e.g., negative deposits) to a dedicated log file.
-*   **Data Transfer Objects (DTOs):** A collection of classes (`CustomerRegistrationDto`, `LoanApplicationDto`, `OpenAccountDto`, `TransactionDto`, `TransferDto`) used to encapsulate data sent from the web frontend. These ensure that internal domain models (`Account`, `Customer`) are decoupled from the HTTP request structure.
+We focused on **Strong Mutant Killing**: ensuring that the output of the test execution on the original program is strictly different from the output on the mutated program. This was achieved by asserting exact values (e.g., calculating specific EMI decimals) rather than just checking for non-null responses.
 
-### 2. Service Layer (Business Logic)
-Located in `com.fincore.service`.
-*   **AccountService.java:** Orchestrates transactional operations. It handles deposits, withdrawals, and fund transfers. It ensures transactional integrity by modifying in-memory objects and immediately triggering the persistence layer to save state to the disk.
-*   **LoanService.java:** Contains the decision matrix for loan approvals. It utilizes complex conditional logic to assign interest rates based on customer Credit Scores.
+## 3. Libraries and Frameworks Used
 
-### 3. Repository Layer (Persistence)
-Located in `com.fincore.repository`.
-*   **DataStore.java:** Implements the **Singleton Design Pattern**. It acts as an in-memory database using HashMaps but provides persistence via **Java Serialization**.
-*   **Persistence Mechanism:** The system state is serialized into a file named `bank_data.ser`. This ensures that customer data, account balances, and loan records survive application restarts.
+- **Java 17:** The core programming language.
+- **Spring Boot 3.2:** Framework for the Web Application layer.
+- **JUnit 5:** The primary testing framework used for assertions.
+- **PITest (1.16.1):** The open-source mutation testing engine chosen for its robust support of modern Java bytecode and configurable mutation operators.
+- **Maven:** Used for build automation and dependency management.
 
-### 4. Domain Model
-Located in `com.fincore.model`.
-*   **Account.java (Abstract):** The base class defining common attributes like balance and ID.
-*   **SavingsAccount.java:** Implements logic for interest calculations and minimum balance requirements.
-*   **CurrentAccount.java:** Implements logic for overdraft limits.
-*   **Customer.java:** Represents user identity, contact details, and credit scoring data.
-*   **Loan.java:** Represents an active liability with principal, tenure, and repayment tracking.
-*   **Transaction.java:** An immutable record of financial events (timestamp, type, amount).
+## 4. Details of Source Code
 
-### 5. Utility Layer
-Located in `com.fincore.util`.
-*   **FinancialMath.java:** Contains static methods for high-precision financial calculations (EMI, Compound Interest).
-*   **ValidationUtil.java:** Provides Regex-based validation for emails, passwords, and phone numbers.
-*   **DateUtil.java:** Helper methods for date manipulation and difference calculations.
+The **FinCore Banking System** is a persistent web application simulating core financial operations. Unlike simple algorithmic tasks, this project involves state management, file I/O, and complex business rules.
 
-### 6. Configuration & Resources
-*   **logback-test.xml:** Located in `src/test/resources`. Configures the logging framework during testing to split logs between the console and a file (`target/security-events.log`), enabling automated audit testing.
-*   **FinCoreApplication.java:** The standard Spring Boot entry point.
+Screenshots of the home page, register user page and a specific user's account details are given below:
+![alt text](images/login.png)
+![alt text](images/register.png)
+![alt text](images/accountdetails.png)
+**Key Logic Areas Targeted:**
+
+1.  **Persistence Layer (`DataStore`):** Implements a custom Singleton pattern with Java Serialization (`Serializable`) to write data to `bank_data.ser`.
+2.  **Financial Logic (`FinancialMath`, `LoanService`):** Contains arithmetic-heavy formulas for Compound Interest and EMI, as well as nested decision logic for Credit Score tiering.
+3.  **Transactional Logic (`AccountService`):** Manages atomic operations (Deposit, Withdraw, Transfer) ensuring integrity between memory and disk storage.
+
+**Lines of Code**
+
+- **Source Code:** 1142 (Java) + 189 (HTML) = 1331 lines
+- **Test Cases:** 798 (Java) + 19 (XML) = 817 lines
+
+## 5. Detailed Testing Strategy
+
+The testing philosophy for the **FinCore Banking System** was built on the "Testing Pyramid" principle, but inverted slightly to prioritize Mutation Coverage. We employed a multi-layered approach involving Unit, Integration, Mutation, and Security testing.
+
+### 5.1 Unit Testing
+
+**Scope:** `com.fincore.util`, `com.fincore.model`
+
+Unit tests were designed to validate the smallest testable parts of the application in isolation, without dependencies on the Spring Context or File System.
+
+- **Mathematical Precision:**
+
+  - **Class:** `FinancialMathTest.java`
+  - **Methodology:** We tested complex financial formulas against known data.
+  - **Example:** Verifying that the EMI for a principal of 10,000 at 10% for 12 months is exactly 879.16. We used `assertEquals` with a `delta` of 0.01 to handle floating-point arithmetic mutants.
+  - **Edge Cases:** Tested division-by-zero scenarios (e.g., 0% interest rate) to ensure the system degrades gracefully rather than crashing.
+
+- **Coverage Saturation (POJO Integrity):**
+  - **Class:** `ModelTest.java` & `CoverageBoosterTest.java`
+  - **Objective:** To achieve 100% Line Coverage on Data classes (`Customer`, `Account`).
+  - **Technique:** Standard Unit tests often skip simple getters/setters. PITest exploits this by mutating return values (e.g., changing `getName()` to return `null`). By systematically exercising every constructor, accessor, mutator, and `toString()` method, we eliminated "No Coverage" mutants, forcing the mutation score to reflect actual logic gaps rather than missed lines.
+
+### 5.2 Integration Testing
+
+**Scope:** `com.fincore.service`, `com.fincore.repository`
+
+Integration tests focused on the interaction between the Business Logic Layer and the Persistence Layer.
+
+- **Transactional Atomicity:**
+
+  - **Class:** `AccountServiceTest.java`
+  - **Methodology:** We simulated transfer scenarios to ensure that money is deduced from the Sender and added to the Receiver in a single logical transaction.
+  - **Assertion:** We verified that if a transfer fails (e.g., insufficient funds), neither account balance is modified, preserving data consistency.
+
+- **The Persistence Paradox (DataStore Testing):**
+  - **Class:** `DataStoreTest.java`
+  - **The Challenge:** Testing a Singleton that writes to disk is difficult because state persists between tests. Furthermore, PITest generates a `VoidMethodCallMutator` that deletes the `saveData()` call. If the test only checks the in-memory HashMap, the test passes even if saving fails.
+  - **The Solution ("Amnesia Testing"):** We implemented a rigorous setup & teardown process:
+    1.  **Teardown:** The test explicitly deletes `bank_data.ser` before running.
+    2.  **Action:** The test adds a customer/account (triggering `saveData`).
+    3.  **Memory Wipe:** We use **Java Reflection** to forcibly reset the Singleton instance to `null`.
+    4.  **Reload:** We re-initialize the `DataStore`, forcing it to read from the disk.
+    5.  **Verification:** We assert that the data exists. If the mutant deleted the save line, the file read returns nothing, and the test fails (killing the mutant).
+
+### 5.3 Security & Bypass Testing
+
+**Scope:** `com.fincore.controller`, `com.fincore.security`
+
+This layer addresses the requirement for "Client-side web application testing (bypass testing)" and "User session data based testing."
+
+- **Client-Side Bypass:**
+
+  - **Class:** `ClientSideBypassTest.java`
+  - **Tooling:** **Spring MockMvc**.
+  - **Methodology:** HTML5 forms prevent users from entering negative numbers or skipping required fields. However, malicious actors can bypass this using tools like cURL.
+  - **Execution:** We constructed raw HTTP POST requests that deliberately violated business rules (e.g., `amount=-5000`, `password="123"`).
+  - **Success Criteria:** The test passes only if the Controller _rejects_ the input and returns a specific error message, proving that Server-Side Validation is active.
+
+- **Audit Logging Verification:**
+  - **Class:** `SecurityLogTest.java`
+  - **Methodology:** We configured the application to write security events (failed logins, validation bypass attempts) to a dedicated file (`target/security-events.log`).
+  - **Execution:** The test simulates an attack (SQL Injection payload in a name field) and then immediately parses the log file.
+  - **Assertion:** The test verifies that the log contains specific audit tags (e.g., `SECURITY ALERT`), proving the system is monitoring for intrusion attempts.
 
 ---
 
-## Testing Strategy and Test Suite
+## 6. Mutation Analysis & Operators
 
-The project utilizes **JUnit 5** for test execution and **PITest 1.16.1** for mutation analysis. The test suite is structured to target specific architectural layers and security requirements.
+We utilized **PITest 1.16.1** to evaluate the quality of the test suite defined above. We explicitly targeted specific mutation operators to demonstrate robust coverage.
 
-### 1. Unit Testing
-Located in `com.fincore.util` and `com.fincore.model`.
-*   **FinancialMathTest.java:** Verifies mathematical formulas to prevent arithmetic errors.
-*   **ValidationUtilTest.java:** Ensures input validation logic correctly identifies malformed data.
-*   **ModelTest.java:** Verifies the integrity of POJOs (Plain Old Java Objects) to ensure getters, setters, and constructors function correctly.
+### 6.1 Unit Level Operators
 
-### 2. Integration Testing
-Located in `com.fincore.service` and `com.fincore.repository`.
-*   **AccountServiceTest.java:** Tests the interaction between the Service layer and the DataStore. It verifies that transfers correctly deduct from one account and add to another.
-*   **LoanServiceTest.java:** Verifies the loan approval logic and interest rate assignment.
-*   **DataStoreTest.java:** Specifically targets the Persistence Layer. It performs file system checks to ensure that data written to memory is successfully committed to the `bank_data.ser` file.
+These operators modify logic within a single method.
 
-### 3. Security & Bypass Testing
-Located in `com.fincore.security`. This section addresses the requirement for **"Client-side web application testing (bypass testing)"** and **"User session data based testing"**.
+| Operator                   | Description                                           | Killed By            | Strategy                                                                                                                                                                                                                                                   |
+| :------------------------- | :---------------------------------------------------- | :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`MathMutator`**          | Replaces binary arithmetic (`+`, `-`, `*`, `/`).      | `FinancialMathTest`  | We asserted exact double values (e.g., `1000.1`) rather than ranges. A change from `+` to `-` produces a massive deviation, causing the assertion to fail.                                                                                                 |
+| **`ConditionalsBoundary`** | Replaces relational operators (`<`, `<=`, `>`, `>=`). | `BoundaryKillerTest` | This is the hardest mutant to kill. PITest changes `if(score >= 600)` to `if(score > 600)`. A test using `1000` passes both. We wrote a test using **exactly 600**. The original code allows it; the mutant blocks it. The test fails, killing the mutant. |
+| **`PrimitiveReturns`**     | Replaces return values with `0` or `false`.           | `ModelTest`          | By validating every getter return value against the constructor input, we ensure no data is silently lost.                                                                                                                                                 |
 
-*   **ClientSideBypassTest.java:** Uses `MockMvc` to send raw HTTP POST requests directly to the controllers, bypassing HTML constraints (e.g., `min="0"`, `required`). It verifies that the server-side logic correctly rejects malicious payloads like negative amounts or weak passwords.
-*   **SecurityLogTest.java:** Simulates a malicious attack (e.g., SQL Injection attempt or Negative Deposit) and immediately parses the generated log file (`security-events.log`). It asserts that the system correctly identified the transaction as suspicious and recorded it for audit purposes.
+### 6.2 Integration Level Operators
 
-### 4. Advanced Testing Components
-To achieve a high Mutation Score, specialized tests were implemented:
-*   **BoundaryKillerTest.java:** Designed to kill "Conditionals Boundary Mutants". It targets exact edge cases (e.g., Credit Score = 300, Balance = 0.0) to ensure strict adherence to business rules.
-*   **CoverageBoosterTest.java:** A saturation test designed to execute every line of code in the DTOs and Utility classes, eliminating "No Coverage" mutants and ensuring the mutation analysis focuses on logic rather than unreachable code.
+These operators modify how methods call other methods or handle flow.
 
----
+| Operator                 | Description                                                          | Killed By            | Strategy                                                                                                                                                                                              |
+| :----------------------- | :------------------------------------------------------------------- | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`VoidMethodCall`**     | Removes calls to void methods (e.g., `saveData()`, `logger.info()`). | `DataStoreTest`      | As described in the "Persistence Paradox," we verified disk content, not just memory content. If the save call is removed, the disk check fails.                                                      |
+| **`NegateConditionals`** | Inverts boolean logic (`if(x)` becomes `if(!x)`).                    | `AccountServiceTest` | We tested transfer logic where funds were insufficient. The inverted logic would allow the transfer. Our test asserts an Exception is thrown; the mutant does not throw it, causing the test to fail. |
+| **`NullReturns`**        | Forces methods to return `null`.                                     | `ServiceTest`        | We tested scenarios where `DataStore.getCustomer()` is called. If it returns null (due to mutation), the Service throws a `NullPointerException` or logic error, which our test suite catches.        |
 
-## Mutation Analysis Results
+## 7. Results and Analysis
 
-The system underwent rigorous Mutation Testing to ensure the quality of the test suite.
+In the beginning we got a mutation score of only 21% due to majority of test not being written.
+![alt text](images/21.png)
+We added more test cases to enhance coverage in the already existing files to 60%.
+![alt text](images/60.png)
+We noticed that the tests in AccountServiceTest.java and LoanServiceTest.java were insufficient to cover the mutations
+in the service module. We specifically targetted the mutations in these two files and the increased the mutation score to 85%.
+![alt text](images/85.png)
+After repeating the process many times, we finally got a mutation score of 88%.
 
-*   **Mutation Engine:** PITest
-*   **Mutation Score:** ~73% (Exceeding the 70% requirement)
-*   **Operators Targeted:**
-    *   **Math Mutator:** Replaced arithmetic operations (Verified in `FinancialMath`).
-    *   **Void Method Call Mutator:** Removed calls to `saveData()` (Caught by `DataStoreTest`).
-    *   **Conditionals Boundary Mutator:** Changed relational operators (Caught by `BoundaryKillerTest`).
-    *   **Negate Conditionals Mutator:** Inverted boolean logic (Caught by `AccountServiceTest`).
+###
 
----
+The final mutation analysis yielded the following results:
 
-## Prerequisites and Tools
+- **Mutation Score:** **88%**
+- **Line Coverage:** **95%**
+- **Mutants Killed:** **192 / 219**
+- **Mutations with no coverage** **9. Test strength 91%**
 
-*   **Java Development Kit (JDK):** Version 17 or higher.
-*   **Build Tool:** Maven 3.6+.
-*   **Framework:** Spring Boot 3.2.2.
-*   **Dependencies:** Spring Web, Thymeleaf, JUnit 5, PITest.
+![alt text](/images/88.png)
 
-## Execution Instructions
+## 8. Steps To Run
 
-### 1. Running the Web Application
-To start the application server:
+### Common Steps
+
 ```bash
+# 1. Build the project
+mvn clean install
+
+# 2. Run the Web Application
 mvn spring-boot:run
 ```
-Once started, the application is accessible via a web browser at: **http://localhost:8080**
 
-### 2. Running the Test Suite
-To execute all Unit, Integration, and Security tests:
+Access the application at: `http://localhost:8080`
+
+### For Testing
+
 ```bash
+# 1. Run Standard Unit & Integration Tests
 mvn test
-```
 
-### 3. Running Mutation Analysis
-To generate the mutation coverage report:
-```bash
+# 2. Run Mutation Analysis
 mvn test pitest:mutationCoverage
 ```
-The resulting HTML report will be generated in `target/pit-reports/index.html`.
 
----
+The mutation report will be available at `target/pit-reports/index.html`.
 
-## Team Contribution
+## 9. Individual Contributions
 
-| Student | Role | Contributions |
-| :--- | :--- | :--- |
-| **[Student 1]** | **Core Architecture & Persistence** | Designed the Model layer, implemented the Singleton `DataStore` with Serialization, and wrote the `ModelTest` and `CoverageBooster` suites. |
-| **[Student 2]** | **Service Logic & Testing Strategy** | Implemented `AccountService` and `LoanService`, migrated the app to Spring Boot, implemented the Security Audit Logging, and wrote `SecurityLogTest` and `IntegrationTests`. |
+- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented the Service Layer logic (`AccountService`, `LoanService`) and the Web Controller. Implemented the "Coverage Saturation" strategy (`ModelTest`) and Unit Tests for Utilities.
+- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Designed the Model architecture and `DataStore` persistence. Designed the Integration Tests (`DataStoreTest`) to handle persistence mutants and configured the PITest strategy.
 
----
+All other work including documentation was done equally by both the team members.
 
-### Tools Used
-*   **Java 22:** Core Language.
-*   **Spring Boot 3.2:** Web Framework.
-*   **Thymeleaf:** Frontend Templating.
-*   **Maven:** Build Tool.
-*   **JUnit 5:** Testing Framework.
-*   **PITest 1.16.1:** Mutation Testing Engine.
+## 11. Future Scope
+
+While the current project achieves high logical coverage, future work could include:
+
+1.  **Fuzz Testing:** Integrating Jqwik to automate random input generation for the Web Controller.
+2.  **Performance Testing:** Using JMeter to stress-test the file locking mechanism in `DataStore`.
