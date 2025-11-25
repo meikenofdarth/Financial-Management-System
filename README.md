@@ -196,4 +196,4 @@ We used AI at the start to plan the overall layout at the preliminary stages of 
 
 We have used AI to generate the boilerplate code and have also used when we felt it was necessary to flesh out some functionalities in the code and check syntax. \
 
-We have done all of the testing by hand. We manually tested each module and functionality by executing various input scenarios, validating outputs, and verifying that the system behaved according to the expected requirements. This included functional testing, and boundary case analysis. 
+We have done all of the testing by hand. We manually tested each module and functionality by executing various input scenarios, validating outputs, and verifying that the system behaved according to the expected requirements. This included functional testing and boundary case analysis. 
