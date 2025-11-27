@@ -183,8 +183,8 @@ The mutation report will be available at `target/pit-reports/index.html`.
 
 ## 9. Individual Contributions
 
-- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented testing for files under folders - Model, Repository , LoanServiceTest.java and ClientSideBypassTest.java.
-- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Implemented testing for files under folders - Util, AccountServiceTest.java, SecurityLogTest.java and CoverageBoosterTest.java.
+- **[IMT2022035 Sanchit Kumar Dogra:](https://github.com/meikenofdarth)** Implemented testing for files under folders - Model, Repository, Service and ClientSideBypassTest.java.
+- **[IMT2022103 Anurag Ramaswamy:](https://github.com/Anurag9507)** Implemented testing for files under folders - Util, SecurityLogTest.java and CoverageBoosterTest.java.
  
 All other work including documentation was done equally by both the team members.
 
